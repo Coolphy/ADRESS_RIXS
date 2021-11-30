@@ -31,7 +31,7 @@ def getdata(scannumber):
     elif scannumber < 1000:    
         filename = base+"_"+"0"+str(scannumber)
     else:    
-        filename = mypath+base+"_"+str(scannumber)
+        filename = base+"_"+str(scannumber)
 
     f1 = h5py.File(inputFilePath+filename+"_d1.h5", 'r')
     f2 = h5py.File(inputFilePath+filename+"_d2.h5", 'r')
