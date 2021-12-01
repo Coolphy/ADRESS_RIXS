@@ -48,10 +48,6 @@ def getdata(scannumber):
     tempData = (data1+data2+data3)/3
     data = [xdata,tempData]
     
-#    np.savetxt(outputFilePath+filename+'.dat' , np.transpose(data) , #delimiter=", ",
-#             newline="\n" , comments="# " , header="energyloss, counts"
-#              )
-    
     return data
 
 def elasticShift(pixelData):
