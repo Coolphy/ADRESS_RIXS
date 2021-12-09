@@ -80,7 +80,7 @@ class FileEventHandler(FileSystemEventHandler):
             print("directory created:{0}".format(event.src_path))
         else:
             print("file created:{0}".format(event.src_path))
-            getInfo(newFile(path))
+            # getInfo(newFile(path))
 
     def on_deleted(self, event):
         if event.is_directory:
@@ -96,12 +96,8 @@ class FileEventHandler(FileSystemEventHandler):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
-    path = "C:\\Researches\\Scripts\\plotRIXS\\test\\"
+
+    path = "C:\\Researches\\Scripts\\plotRIXS\\"
     event_handler = FileEventHandler()
     observer = Observer()
     observer.schedule(event_handler, path, recursive=True)

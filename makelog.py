@@ -7,7 +7,6 @@ import csv
 def listFile(fileDir):
     list = os.listdir(fileDir)
     # list.sort(key=lambda fn: os.path.getmtime(fileDir + fn))
-    # print(list[-1])
     return list
 
 
