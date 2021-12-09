@@ -38,11 +38,12 @@ def getInfo(filename):
 
     AcqTime = np.mean(f["entry"]["instrument"]["NDAttributes"]["AcquireTime"][()])
     SplitTime = np.mean(f["entry"]["instrument"]["NDAttributes"]["ExposureSplit"][()])
+    ExitSlit = np.mean(f["entry"]["instrument"]["NDAttributes"]["ExitSlit"][()])
     Ring = round(
         np.mean(f["entry"]["instrument"]["NDAttributes"]["BeamCurrent"][()]), 0
     )
     fileInfo = [
-        filename,
+        filename[:-6],
         PhotonEnergy,
         Polarization,
         Temp,
@@ -54,13 +55,15 @@ def getInfo(filename):
         Tilt,
         AcqTime,
         SplitTime,
+        ExitSlit,
         Ring,
     ]
     return fileInfo
 
 
 if __name__ == "__main__":
-    path = "C:\\Researches\\Data\\CrBr3\\202109\\"
+    path = "C:\\Researches\\Data\\VI3\\202107\\"
+    # path = os.path.split(os.path.realpath(__file__))[0]
     f = open(path + "logbook.csv", "w", newline="")
     writer = csv.writer(f)
     fileList = listFile(path + "RIXS\\")
@@ -78,6 +81,7 @@ if __name__ == "__main__":
             "Tilt",
             "AcqTime(s)",
             "SplitTime(s)",
+            "Slit(um)",
             "RingCurrent",
         ]
     )
