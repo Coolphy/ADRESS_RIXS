@@ -1,12 +1,9 @@
 import time
-from numpy.core.shape_base import block
 from watchdog.observers import Observer
 from watchdog.events import *
 import os
 import h5py
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy.signal import find_peaks
 
 
 def newFile(fileDir):
@@ -16,38 +13,98 @@ def newFile(fileDir):
     return list[-1]
 
 
-def elasticShift(pixelData):
-    global energyDispersion
-    peaks, _ = find_peaks(pixelData, height=20, width=5)
-    xdataPixel = np.arange(len(pixelData))
-    xdataPixel = xdataPixel[(peaks[-1] - 2000) : (peaks[-1] + 200)]
-    energyData = pixelData[(peaks[-1] - 2000) : (peaks[-1] + 200)]
-    xDataEnergy = (xdataPixel - peaks[-1]) * energyDispersion * -1
-    return [xDataEnergy, energyData]
+def getInfo(filename):
+    global path
+    f = h5py.File(path + filename, "r")
+
+    PhotonEnergy = round(
+        np.mean(f["entry"]["instrument"]["NDAttributes"]["PhotonEnergy"][()]), 3
+    )
+    PolarMode = np.mean(f["entry"]["instrument"]["NDAttributes"]["PolarMode"][()])
+    # if PolarMode == 0:
+    #     Polarization = "LH"
+    # elif PolarMode == 1:
+    #     Polarization = "LV"
+    # elif PolarMode == 2:
+    #     Polarization = "C+"
+    # else:
+    #     Polarization = "C-"
+
+    Temp = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleTemp"][()]), 2)
+
+    xx = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleX"][()]), 4)
+    yy = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleY"][()]), 4)
+    zz = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleZ"][()]), 4)
+    Tht = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleTheta"][()]), 3)
+    Phi = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SamplePhi"][()]), 3)
+    Tilt = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleTilt"][()]), 3)
+
+    AcqTime = np.mean(f["entry"]["instrument"]["NDAttributes"]["AcquireTime"][()])
+    SplitTime = np.mean(f["entry"]["instrument"]["NDAttributes"]["ExposureSplit"][()])
+    Ring = round(
+        np.mean(f["entry"]["instrument"]["NDAttributes"]["BeamCurrent"][()]), 0
+    )
+    fileInfo = [
+        PhotonEnergy,
+        PolarMode,
+        Temp,
+        xx,
+        yy,
+        zz,
+        Tht,
+        Phi,
+        Tilt,
+        AcqTime,
+        SplitTime,
+        Ring,
+    ]
+    print(fileInfo)
 
 
-def getdata(filename):
-    global filePath
-    f = h5py.File(filePath + filename, "r")
-    ccd = f["entry"]["analysis"]["spectrum"][()]
-    [xdata, data] = elasticShift(ccd)
-    return [xdata, data]
+class FileEventHandler(FileSystemEventHandler):
+    def on_any_event(self, event):
+        pass
 
+    def on_moved(self, event):
+        if event.is_directory:
+            print(
+                "directory moved from {0} to {1}".format(
+                    event.src_path, event.dest_path
+                )
+            )
+        else:
+            print("file moved from {0} to {1}".format(event.src_path, event.dest_path))
 
-def plotData(filename):
-    [X, Y] = getdata(filename)
-    plt.clf()
-    plt.plot(X, Y, label=filename)
-    plt.legend()
-    plt.show(block=False)
+    def on_created(self, event):
+        if event.is_directory:
+            print("directory created:{0}".format(event.src_path))
+        else:
+            print("file created:{0}".format(event.src_path))
+            getInfo(newFile(path))
+
+    def on_deleted(self, event):
+        if event.is_directory:
+            print("directory deleted:{0}".format(event.src_path))
+        else:
+            print("file deleted:{0}".format(event.src_path))
+
+    def on_modified(self, event):
+        if event.is_directory:
+            print("directory modified:{0}".format(event.src_path))
+        else:
+            print("file modified:{0}".format(event.src_path))
 
 
 if __name__ == "__main__":
-    filePath = "C:\\Researches\\Scripts\\plotRIXS\\test\\"
-    energyDispersion = 0.008128  # eV/subpixel
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+    path = "C:\\Researches\\Scripts\\plotRIXS\\test\\"
+    event_handler = FileEventHandler()
     observer = Observer()
-    observer.schedule(plotData(newFile(filePath)), filePath, recursive=True)
-    fig = plt.figure()
+    observer.schedule(event_handler, path, recursive=True)
     observer.start()
     try:
         while True:
