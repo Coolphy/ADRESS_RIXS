@@ -1,6 +1,7 @@
 import os
 import h5py
 import numpy as np
+import csv
 
 
 def listFile(fileDir):
@@ -12,7 +13,7 @@ def listFile(fileDir):
 
 def getInfo(filename):
     global path
-    f = h5py.File(path + filename, "r")
+    f = h5py.File(path + "RIXS\\" + filename, "r")
 
     PhotonEnergy = round(
         np.mean(f["entry"]["instrument"]["NDAttributes"]["PhotonEnergy"][()]), 3
@@ -56,15 +57,31 @@ def getInfo(filename):
         SplitTime,
         Ring,
     ]
-    print(fileInfo)
+    return fileInfo
 
 
 if __name__ == "__main__":
-    path = "C:\\Researches\\Scripts\\plotRIXS\\test\\"
-    fileList = listFile(path)
-    print(
-        "Filename,PhotonEnergy,Polarization,Temp,xx,yy,zz,Tht,Phi,Tilt,AcqTime,SplitTime,Ring"
+    path = "C:\\Researches\\Data\\CrBr3\\202109\\"
+    f = open(path + "logbook.csv", "w", newline="")
+    writer = csv.writer(f)
+    fileList = listFile(path + "RIXS\\")
+    writer.writerow(
+        [
+            "Files",
+            "PhotonEnergy(eV)",
+            "Polarization",
+            "Temperature(K)",
+            "SampleX(mm)",
+            "SampleY(mm)",
+            "SampleZ(mm)",
+            "Theta",
+            "Phi",
+            "Tilt",
+            "AcqTime(s)",
+            "SplitTime(s)",
+            "RingCurrent",
+        ]
     )
 
-    for x in fileList:
-        getInfo(x)
+    for x in fileList[::3]:
+        writer.writerow(getInfo(x))
