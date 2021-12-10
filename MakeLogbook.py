@@ -2,6 +2,8 @@ import os
 import h5py
 import numpy as np
 import csv
+import tkinter as tk
+from tkinter import filedialog
 
 
 def listFile(fileDir):
@@ -12,7 +14,7 @@ def listFile(fileDir):
 
 def getInfo(filename):
     global path
-    f = h5py.File(path + "RIXS\\" + filename, "r")
+    f = h5py.File(path + "\\RIXS\\" + filename, "r")
 
     PhotonEnergy = round(
         np.mean(f["entry"]["instrument"]["NDAttributes"]["PhotonEnergy"][()]), 3
@@ -62,11 +64,17 @@ def getInfo(filename):
 
 
 if __name__ == "__main__":
-    path = "C:\\Researches\\Data\\VI3\\202107\\"
+
+    root = tk.Tk()
+    root.withdraw()
+    path = filedialog.askdirectory()
+    print(path)
+
+    # path = "C:\\Researches\\Data\\VI3\\202107"
     # path = os.path.split(os.path.realpath(__file__))[0]
-    f = open(path + "logbook.csv", "w", newline="")
+    f = open(path + "\\logbook.csv", "w", newline="")
     writer = csv.writer(f)
-    fileList = listFile(path + "RIXS\\")
+    fileList = listFile(path + "\\RIXS\\")
     writer.writerow(
         [
             "Files",
