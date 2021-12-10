@@ -64,6 +64,11 @@ def invertedframe(latticeConstant):
     return ar, br, cr
 
 
+def vectorSum(a, b, gamma):
+    sum = math.sqrt(a * a + b * b - 2 * a * b * cos((180 - gamma) / 180 * math.pi))
+    return sum
+
+
 twoTheta = 130
 energy = 530
 
@@ -73,8 +78,18 @@ energy = 530
 theta = 120
 qIn, qOut = thToq(energy, twoTheta, adressTheta(theta, twoTheta))
 
-lattice = [3.14, 3.14, 3.14, 90, 90, 90]
-ar, br, cr = invertedframe(lattice)
+# qIn = 1
+# alpha = qInToth(energy, twoTheta, qIn)
 
 qIn = 1
 theta = adressTheta(qInToth(energy, twoTheta, qIn), twoTheta)
+
+
+lattice = [3.14, 3.14, 3.14, 90, 90, 90]
+ar, br, cr = invertedframe(lattice)
+
+# (1,0)
+q = qIn / ar
+
+# (1,1)
+q = qIn / vectorSum(ar, br, (180 - lattice[5]))
