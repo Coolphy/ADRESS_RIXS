@@ -11,12 +11,22 @@ def qTrans(energy, twoTheta):
     return qTrans
 
 
-def projectQ(energy, twoTheta, alpha):
+def thToq(energy, twoTheta, alpha):
     qParallel = qTrans(energy, twoTheta) * math.cos(
-        (alpha + twoTheta / 2) / 180 * math.pi
+        (alpha + (180 - twoTheta) / 2) / 180 * math.pi
     )
-    qPerpendicular = qTrans * math.sin((alpha + twoTheta / 2) / 180 * math.pi)
+    qPerpendicular = qTrans(energy, twoTheta) * math.sin(
+        (alpha + (180 - twoTheta) / 2) / 180 * math.pi
+    )
     return qParallel, qPerpendicular
+
+
+def qInToth(energy, twoTheta, qIn):
+
+    alpha = (
+        math.acos(qIn / qTrans(energy, twoTheta)) / math.pi * 180 - (180 - twoTheta) / 2
+    )
+    return alpha
 
 
 def adressTheta(theta, twoTheta):
@@ -61,7 +71,10 @@ energy = 530
 # qIn, qOut = project(energy, twoTheta, alpha)
 
 theta = 120
-qIn, qOut = projectQ(energy, twoTheta, adressTheta(theta, twoTheta))
+qIn, qOut = thToq(energy, twoTheta, adressTheta(theta, twoTheta))
 
 lattice = [3.14, 3.14, 3.14, 90, 90, 90]
 ar, br, cr = invertedframe(lattice)
+
+qIn = 1
+theta = adressTheta(qInToth(energy, twoTheta, qIn), twoTheta)
