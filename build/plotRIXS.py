@@ -74,16 +74,9 @@ def elasticShift(pixel, data):
         data, height=3, width=3
     )  # height and width of the elastic peak
 
-    pixeldata = pixel[
-        (peaks[-1] - dataLength) : (peaks[-1] + 100)
-    ]  # data length picked
-    choosedata = data[
-        (peaks[-1] - dataLength) : (peaks[-1] + 100)
-    ]  # need to be changed with the zero list
+    xDataEnergy = (pixel - peaks[-1]) * energyDispersion / 1000 * -1
 
-    xDataEnergy = (pixeldata - peaks[-1]) * energyDispersion / 1000 * -1
-
-    return [xDataEnergy, choosedata]
+    return [xDataEnergy, data]
 
 
 def getdata(fileName):
