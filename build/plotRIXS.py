@@ -47,8 +47,21 @@ def xCorr(refData, uncorrData):
     corr = signal.correlate(refData, uncorrData)  # consider full pattern
     lags = signal.correlation_lags(len(refData), len(uncorrData))
     lag = lags[np.argmax(corr)]
+    uncorrData = np.roll(uncorrData, lag)
 
+    peaks, _ = signal.find_peaks(refData, height=3, width=3)
+
+    corr = signal.correlate(
+        refData[(peaks[-1] - 50) : (peaks[-1] + 50)],
+        uncorrData[(peaks[-1] - 50) : (peaks[-1] + 50)],
+    )  # just consider elastic peak
+    lags = signal.correlation_lags(
+        len(refData[(peaks[-1] - 50) : (peaks[-1] + 50)]),
+        len(uncorrData[(peaks[-1] - 50) : (peaks[-1] + 50)]),
+    )
+    lag = lags[np.argmax(corr)]
     corrData = np.roll(uncorrData, lag)
+
     return corrData
 
 
@@ -86,13 +99,25 @@ def combineData(fileList):
 
     for i, s in enumerate(fileList):
         [xData, oneData] = getdata(s)
+        axs[0, 0].plot(xData, oneData)
+        # axs[0, 0].set_title("Raw data")
+        axs[0, 0].set_xlabel("Positon (Pixels)")
+        axs[0, 0].set_ylabel("Photons (Counts)")
         if i == 0:
             [xRefData, refData] = [xData, oneData]
             sumData = oneData
         else:
-            oneData = xCorr(refData, oneData)  # xCorr(refData, uncorrData):
+            oneData = xCorr(refData, oneData)
+            axs[0, 1].plot(xRefData, oneData)
+            # axs[0, 1].set_title("Shifted data")
+            axs[0, 1].set_xlabel("Positon (Pixels)")
+            axs[0, 1].set_ylabel("Photons (Counts)")
             sumData = sumData + oneData
     aveData = sumData / len(fileList)
+    axs[1, 0].plot(xRefData, aveData)
+    # axs[1, 0].set_title("Combined data")
+    axs[1, 0].set_xlabel("Positon (Pixels)")
+    axs[1, 0].set_ylabel("Photons (Counts)")
 
     [energy, data] = elasticShift(xRefData, aveData)
     xdata = zeroEnergy(energy, data)
@@ -112,10 +137,14 @@ for i in range(100):
     fileList = list(filedialog.askopenfilenames(title="Select data files"))
     # print(fileList)
 
+    fig, axs = plt.subplots(2, 2)
+
     [X, Y] = combineData(fileList)
 
-    plt.figure()
-    plt.plot(X, Y)
+    axs[1, 1].plot(X, Y)
+    # axs[1, 1].set_title("Calibrated data")
+    axs[1, 1].set_xlabel("Energy Loss (eV)")
+    axs[1, 1].set_ylabel("Photons (Counts)")
     plt.show()
 
     f = filedialog.asksaveasfile(
