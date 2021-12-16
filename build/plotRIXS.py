@@ -132,7 +132,7 @@ for i in range(1000):
     if len(fileList) == 0:
         break
 
-    fig, axs = plt.subplots(2, 2)
+    fig, axs = plt.subplots(2, 2, figsize=(6.4 * 2, 4.8 * 2))
 
     [X, Y] = combineData(fileList)
 
