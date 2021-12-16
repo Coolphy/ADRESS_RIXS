@@ -47,19 +47,19 @@ def xCorr(refData, uncorrData):
     corr = signal.correlate(refData, uncorrData)  # consider full pattern
     lags = signal.correlation_lags(len(refData), len(uncorrData))
     lag = lags[np.argmax(corr)]
-    uncorrData = np.roll(uncorrData, lag)
+    # uncorrData = np.roll(uncorrData, lag)
 
-    peaks, _ = signal.find_peaks(refData, height=3, width=3)
+    # peaks, _ = signal.find_peaks(refData, height=3, width=3)
 
-    corr = signal.correlate(
-        refData[(peaks[-1] - 50) : (peaks[-1] + 50)],
-        uncorrData[(peaks[-1] - 50) : (peaks[-1] + 50)],
-    )  # just consider elastic peak
-    lags = signal.correlation_lags(
-        len(refData[(peaks[-1] - 50) : (peaks[-1] + 50)]),
-        len(uncorrData[(peaks[-1] - 50) : (peaks[-1] + 50)]),
-    )
-    lag = lags[np.argmax(corr)]
+    # corr = signal.correlate(
+    #     refData[(peaks[-1] - 50) : (peaks[-1] + 50)],
+    #     uncorrData[(peaks[-1] - 50) : (peaks[-1] + 50)],
+    # )  # just consider elastic peak
+    # lags = signal.correlation_lags(
+    #     len(refData[(peaks[-1] - 50) : (peaks[-1] + 50)]),
+    #     len(uncorrData[(peaks[-1] - 50) : (peaks[-1] + 50)]),
+    # )
+    # lag = lags[np.argmax(corr)]
     corrData = np.roll(uncorrData, lag)
 
     return corrData
@@ -124,11 +124,13 @@ dataLength = 2000  # subpixels
 energyDispersion = float(input("Energy dispersion (meV/subpiexel) = "))
 # energyResolution = float(input("Energy resolution (meV) = "))
 
-for i in range(100):
+for i in range(1000):
     root = tk.Tk()
     root.withdraw()
     fileList = list(filedialog.askopenfilenames(title="Select data files"))
     # print(fileList)
+    if len(fileList) == 0:
+        break
 
     fig, axs = plt.subplots(2, 2)
 
@@ -144,14 +146,14 @@ for i in range(100):
         mode="w", filetypes=[("txt file", ".txt")], defaultextension=".txt"
     )
     if f is None:
-        pass
-    else:
-        np.savetxt(
-            f,
-            np.transpose([X, Y]),
-            delimiter="    ",
-            newline="\n",
-            comments="# ",
-            header="ELoss, Counts",
-        )
-        f.close()
+        continue
+
+    np.savetxt(
+        f,
+        np.transpose([X, Y]),
+        delimiter="    ",
+        newline="\n",
+        comments="# ",
+        header="ELoss, Counts",
+    )
+    f.close()
