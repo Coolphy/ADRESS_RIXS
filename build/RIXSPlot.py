@@ -122,12 +122,12 @@ energyResolution = 30  # eV
 dataLength = 2000  # subpixels
 
 energyDispersion = float(input("Energy dispersion (meV/subpiexel) = "))
-# energyResolution = float(input("Energy resolution (meV) = "))
+
 
 for i in range(1000):
     root = tk.Tk()
     root.withdraw()
-    fileList = list(filedialog.askopenfilenames(title="Select data files"))
+    fileList = list(filedialog.askopenfilenames(title="Select ADRESS data files"))
     # print(fileList)
     if len(fileList) == 0:
         break
@@ -143,7 +143,10 @@ for i in range(1000):
     plt.show()
 
     f = filedialog.asksaveasfile(
-        mode="w", filetypes=[("txt file", ".txt")], defaultextension=".txt"
+        mode="w",
+        filetypes=[("txt file", ".txt")],
+        defaultextension=".txt",
+        title="Save the spectrum as",
     )
     if f is None:
         continue
@@ -154,6 +157,6 @@ for i in range(1000):
         delimiter="    ",
         newline="\n",
         comments="# ",
-        header="ELoss, Counts",
+        header="ELoss(eV)    Photons(counts)",
     )
     f.close()
