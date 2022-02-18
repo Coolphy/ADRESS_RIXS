@@ -29,7 +29,9 @@ def PseudoVoigt(x, x0, dx_l, dx_g, a, eta):
 
 def zeroEnergy(xUncorrEnegy, uncorrData):
     global energyResolution
-    peaks, properties = signal.find_peaks(uncorrData, height=3, width=3)
+    peaks, properties = signal.find_peaks(
+        uncorrData, height=np.max(uncorrData) / 10, width=3
+    )
 
     popt, _ = curve_fit(
         gaussian_norm,
@@ -71,7 +73,7 @@ def elasticShift(pixel, data):
     global dataLength
 
     peaks, _ = signal.find_peaks(
-        data, height=3, width=3
+        data, height=np.max(data) / 10, width=3
     )  # height and width of the elastic peak
 
     xDataEnergy = (pixel - peaks[-1]) * energyDispersion / 1000 * -1
@@ -153,10 +155,10 @@ for i in range(1000):
 
     np.savetxt(
         f,
-        np.transpose([X, Y]),
-        delimiter="    ",
+        np.transpose([X[::-1], Y[::-1]]),
+        delimiter="\t",
         newline="\n",
         comments="# ",
-        header="ELoss(eV)    Photons(counts)",
+        header="ELoss(eV)" + "\n" + "Photons(counts)",
     )
     f.close()
