@@ -7,24 +7,24 @@ import tkinter as tk
 from tkinter import filedialog
 
 
-def gaussian_norm(x, mu, gamma, amp, a, b):
-    sig = gamma / 2 / np.sqrt(2 * np.log(2))
-    norm = 1.0 / (np.sqrt(2 * np.pi) * sig)
-    return amp * norm * np.exp(-((x - mu) ** 2) / (2 * sig ** 2)) + a + b * x
+def gaussian_norm(x, mu, omega, amp, a, b):
+    sig = omega / 2 / np.sqrt(2 * np.log(2))
+    # norm = 1.0 / (np.sqrt(2 * np.pi) * sig)
+    return amp * np.exp(-((x - mu) ** 2) / (2 * sig ** 2)) + a + b * x
 
 
-def PseudoVoigt(x, x0, dx_l, dx_g, a, eta):
-    dx_g = dx_g / 2.355
-    dx_l = dx_l / 2.0
-    return a * (
-        eta
-        * (
-            np.sqrt(np.log(2.0) / np.pi)
-            * (1.0 / dx_g)
-            * np.exp(-np.log(2.0) * (x - x0) ** 2 / dx_g ** 2)
-        )
-        + (1.0 - eta) / (np.pi * dx_l * (1.0 + (x - x0) ** 2 / dx_l ** 2))
-    )
+# def PseudoVoigt(x, x0, dx_l, dx_g, a, eta):
+#     dx_g = dx_g / 2.355
+#     dx_l = dx_l / 2.0
+#     return a * (
+#         eta
+#         * (
+#             np.sqrt(np.log(2.0) / np.pi)
+#             * (1.0 / dx_g)
+#             * np.exp(-np.log(2.0) * (x - x0) ** 2 / dx_g ** 2)
+#         )
+#         + (1.0 - eta) / (np.pi * dx_l * (1.0 + (x - x0) ** 2 / dx_l ** 2))
+#     )
 
 
 def zeroEnergy(xUncorrEnegy, uncorrData):
