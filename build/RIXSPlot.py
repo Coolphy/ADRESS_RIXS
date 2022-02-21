@@ -127,38 +127,42 @@ energyDispersion = float(input("Energy dispersion (meV/subpiexel) = "))
 
 
 for i in range(1000):
-    root = tk.Tk()
-    root.withdraw()
-    fileList = list(filedialog.askopenfilenames(title="Select ADRESS data files"))
-    # print(fileList)
-    if len(fileList) == 0:
-        break
+    try:
+        root = tk.Tk()
+        root.withdraw()
+        fileList = list(filedialog.askopenfilenames(title="Select ADRESS data files"))
+        # print(fileList)
+        if len(fileList) == 0:
+            break
 
-    fig, axs = plt.subplots(2, 2, figsize=(6.4 * 2, 4.8 * 2))
+        fig, axs = plt.subplots(2, 2, figsize=(6.4 * 2, 4.8 * 2))
 
-    [X, Y] = combineData(fileList)
+        [X, Y] = combineData(fileList)
 
-    axs[1, 1].plot(X, Y)
-    # axs[1, 1].set_title("Calibrated data")
-    axs[1, 1].set_xlabel("Energy Loss (eV)")
-    axs[1, 1].set_ylabel("Photons (Counts)")
-    plt.show()
+        axs[1, 1].plot(X, Y)
+        # axs[1, 1].set_title("Calibrated data")
+        axs[1, 1].set_xlabel("Energy Loss (eV)")
+        axs[1, 1].set_ylabel("Photons (Counts)")
+        plt.show()
 
-    f = filedialog.asksaveasfile(
-        mode="w",
-        filetypes=[("txt file", ".txt")],
-        defaultextension=".txt",
-        title="Save the spectrum as",
-    )
-    if f is None:
-        continue
+        f = filedialog.asksaveasfile(
+            mode="w",
+            filetypes=[("txt file", ".txt")],
+            defaultextension=".txt",
+            title="Save the spectrum as",
+        )
+        if f is None:
+            continue
 
-    np.savetxt(
-        f,
-        np.transpose([X[::-1], Y[::-1]]),
-        delimiter="\t",
-        newline="\n",
-        comments="# ",
-        header="ELoss(eV)" + "\n" + "Photons(counts)",
-    )
-    f.close()
+        np.savetxt(
+            f,
+            np.transpose([X[::-1], Y[::-1]]),
+            delimiter="\t",
+            newline="\n",
+            comments="# ",
+            header="ELoss(eV)" + "\n" + "Photons(counts)",
+        )
+        f.close()
+    except:
+        print("Broken files !\n")
+    continue
