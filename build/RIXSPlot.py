@@ -30,7 +30,9 @@ def PseudoVoigt(x, x0, dx_l, dx_g, a, eta):
 def zeroEnergy(xUncorrEnegy, uncorrData):
     global energyResolution
     peaks, properties = signal.find_peaks(
-        uncorrData, height=np.max(uncorrData) / 10, width=3
+        uncorrData,
+        height=((np.max(uncorrData) / 50) if (np.max(uncorrData) / 50) > 5 else 5),
+        width=3,
     )
 
     popt, _ = curve_fit(
@@ -38,6 +40,10 @@ def zeroEnergy(xUncorrEnegy, uncorrData):
         xUncorrEnegy[peaks[-1] - 50 : peaks[-1] + 50],
         uncorrData[peaks[-1] - 50 : peaks[-1] + 50],
         p0=[0, energyResolution / 1000, properties["peak_heights"][-1], 0, 0],
+        bounds=(
+            [-np.inf, -np.inf, -np.inf, -np.inf, -np.inf],
+            [np.inf, np.inf, np.inf, np.inf, np.inf],
+        ),
     )
     # print(popt)
     xCorrEnergy = xUncorrEnegy - popt[0]
@@ -73,7 +79,7 @@ def elasticShift(pixel, data):
     global dataLength
 
     peaks, _ = signal.find_peaks(
-        data, height=np.max(data) / 10, width=3
+        data, height=((np.max(data) / 50) if (np.max(data) / 50) > 5 else 5), width=3
     )  # height and width of the elastic peak
 
     xDataEnergy = (pixel - peaks[-1]) * energyDispersion / 1000 * -1
@@ -164,5 +170,5 @@ for i in range(1000):
         )
         f.close()
     except:
-        print("Broken files !\n")
+        print("Broken files !")
     continue
