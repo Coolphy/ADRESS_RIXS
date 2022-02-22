@@ -95,4 +95,8 @@ if __name__ == "__main__":
     )
 
     for x in fileList[::3]:
-        writer.writerow(getInfo(x))
+        try:
+            writer.writerow(getInfo(x))
+        except:
+            print("file " + str(x) + "is broken")
+        continue

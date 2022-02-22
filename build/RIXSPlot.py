@@ -1,3 +1,4 @@
+#%%
 import h5py
 import numpy as np
 import matplotlib.pyplot as plt
@@ -6,7 +7,7 @@ from scipy.optimize import curve_fit
 import tkinter as tk
 from tkinter import filedialog
 
-
+#%%
 def gaussian_norm(x, mu, omega, amp, a, b):
     sig = omega / 2 / np.sqrt(2 * np.log(2))
     # norm = 1.0 / (np.sqrt(2 * np.pi) * sig)
@@ -126,7 +127,8 @@ def combineData(fileList):
     return [xdata, data]
 
 
-energyResolution = 30  # eV
+#%%
+energyResolution = 30  # meV
 dataLength = 2000  # subpixels
 
 energyDispersion = float(input("Energy dispersion (meV/subpiexel) = "))
@@ -171,4 +173,5 @@ for i in range(1000):
         f.close()
     except:
         print("Broken files !")
+        plt.close()
     continue

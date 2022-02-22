@@ -14,8 +14,6 @@ outputFilePath = "X:\\RIXS\\Ruiz_e18603\\ASC\\"
 base = "Cu"
 energyDispersion = 0.008128  # eV/subpixel
 
-scans = np.arange(117, 280 + 1)
-
 # os.chdir(outputFilePath)
 
 
@@ -48,7 +46,7 @@ def getdata(scannumber):
     np.savetxt(
         outputFilePath + filename + "_d1.dat",
         np.transpose([xdata, data1]),
-        delimiter="    ",
+        delimiter="\t",
         newline="\n",
         comments="# ",
         header="ELoss, ccd1",
@@ -56,7 +54,7 @@ def getdata(scannumber):
     np.savetxt(
         outputFilePath + filename + "_d2.dat",
         np.transpose([xdata, data2]),
-        delimiter="    ",
+        delimiter="\t",
         newline="\n",
         comments="# ",
         header="ELoss, ccd2",
@@ -64,7 +62,7 @@ def getdata(scannumber):
     np.savetxt(
         outputFilePath + filename + "_d3.dat",
         np.transpose([xdata, data3]),
-        delimiter="    ",
+        delimiter="\t",
         newline="\n",
         comments="# ",
         header="ELoss, ccd3",
@@ -86,5 +84,11 @@ def elasticShift(pixelData):
     return [xDataEnergy, energyData]
 
 
+scans = np.arange(117, 280 + 1)
+
 for i, s in enumerate(scans):
-    getdata(s)
+    try:
+        getdata(s)
+    except:
+        print("Scan " + str(s) + " is broken !")
+    continue
