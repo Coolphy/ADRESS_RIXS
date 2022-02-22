@@ -7,14 +7,14 @@ from tkinter import filedialog
 
 
 def listFile(fileDir):
-    list = os.listdir(fileDir)
+    list = sorted(os.listdir(fileDir))
     # list.sort(key=lambda fn: os.path.getmtime(fileDir + fn))
     return list
 
 
 def getInfo(filename):
     global path
-    f = h5py.File(path + "\\RIXS\\" + filename, "r")
+    f = h5py.File(path + "\\" + filename, "r")
 
     PhotonEnergy = round(
         np.mean(f["entry"]["instrument"]["NDAttributes"]["PhotonEnergy"][()]), 3
@@ -67,14 +67,16 @@ if __name__ == "__main__":
 
     root = tk.Tk()
     root.withdraw()
-    path = filedialog.askdirectory()
+    path = filedialog.askdirectory(title="Select data path")
     print(path)
+    logdir = os.path.abspath(os.path.dirname(path))
+    print(logdir)
 
     # path = "C:\\Researches\\Data\\VI3\\202107"
     # path = os.path.split(os.path.realpath(__file__))[0]
-    f = open(path + "\\logbook.csv", "w", newline="")
+    f = open(logdir + "\\logbook.csv", "w", newline="")
     writer = csv.writer(f)
-    fileList = listFile(path + "\\RIXS\\")
+    fileList = listFile(path)
     writer.writerow(
         [
             "Files",
@@ -98,5 +100,5 @@ if __name__ == "__main__":
         try:
             writer.writerow(getInfo(x))
         except:
-            print("file " + str(x) + "is broken")
+            print("file " + str(x) + " is broken!")
         continue

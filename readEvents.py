@@ -1,3 +1,4 @@
+from ctypes.wintypes import SIZE
 import h5py
 import numpy as np
 import matplotlib.pyplot as plt
@@ -35,9 +36,14 @@ f1 = h5py.File(inputFilePath + "\\" + "Fe_0019_d2" + ".h5", "r")
 
 ccd1 = f1["entry"]["analysis"]["events"][()]
 
+ccd2 = f1["entry"]["analysis"]["bad"][()]
+
+print(np.shape(ccd2))
+# plt.pcolormesh(ccd2)
+
 print(np.transpose(ccd1))
 
-plt.hist2d(*np.transpose(ccd1), bins=[1600, 1500])
+plt.hist2d(*np.transpose(ccd1), bins=[1632, 1500])
 
 # plt.scatter(*np.transpose(ccd1), marker=".")
 
