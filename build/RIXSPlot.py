@@ -42,7 +42,7 @@ def zeroEnergy(xUncorrEnegy, uncorrData):
         uncorrData[peaks[-1] - 50 : peaks[-1] + 50],
         p0=[0, energyResolution / 1000, properties["peak_heights"][-1], 0, 0],
         bounds=(
-            [-np.inf, -np.inf, -np.inf, -np.inf, -np.inf],
+            [-np.inf, 0, 0, -np.inf, -np.inf],
             [np.inf, np.inf, np.inf, np.inf, np.inf],
         ),
     )
@@ -110,11 +110,12 @@ def combineData(fileList):
             sumData = oneData
         else:
             oneData = xCorr(refData, oneData)
-            axs[0, 1].plot(xRefData, oneData)
-            # axs[0, 1].set_title("Shifted data")
-            axs[0, 1].set_xlabel("Positon (Pixels)")
-            axs[0, 1].set_ylabel("Photons (Counts)")
             sumData = sumData + oneData
+        axs[0, 1].plot(xRefData, oneData)
+        # axs[0, 1].set_title("Shifted data")
+        axs[0, 1].set_xlabel("Positon (Pixels)")
+        axs[0, 1].set_ylabel("Photons (Counts)")
+
     aveData = sumData / len(fileList)
     axs[1, 0].plot(xRefData, aveData)
     # axs[1, 0].set_title("Combined data")
@@ -128,10 +129,12 @@ def combineData(fileList):
 
 
 #%%
-energyResolution = 30  # meV
+
 dataLength = 2000  # subpixels
 
 energyDispersion = float(input("Energy dispersion (meV/subpiexel) = "))
+
+energyResolution = energyDispersion * 10  # meV
 
 
 for i in range(1000):
