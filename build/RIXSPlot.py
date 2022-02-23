@@ -77,11 +77,16 @@ def xCorr(refData, uncorrData):
 def elasticShift(pixel, data):
 
     global energyDispersion
-    global dataLength
+    # global dataLength
 
     peaks, _ = signal.find_peaks(
         data, height=((np.max(data) / 50) if (np.max(data) / 50) > 5 else 5), width=3
     )  # height and width of the elastic peak
+
+    axs[1, 0].plot(pixel - peaks[-1], data)
+    # axs[1, 0].set_title("Combined data")
+    axs[1, 0].set_xlabel("Positon (Pixels)")
+    axs[1, 0].set_ylabel("Photons (Counts)")
 
     xDataEnergy = (pixel - peaks[-1]) * energyDispersion / 1000 * -1
 
@@ -117,10 +122,6 @@ def combineData(fileList):
         axs[0, 1].set_ylabel("Photons (Counts)")
 
     aveData = sumData / len(fileList)
-    axs[1, 0].plot(xRefData, aveData)
-    # axs[1, 0].set_title("Combined data")
-    axs[1, 0].set_xlabel("Positon (Pixels)")
-    axs[1, 0].set_ylabel("Photons (Counts)")
 
     [energy, data] = elasticShift(xRefData, aveData)
     xdata = zeroEnergy(energy, data)
@@ -130,7 +131,7 @@ def combineData(fileList):
 
 #%%
 
-dataLength = 2000  # subpixels
+# dataLength = 2000  # subpixels
 
 energyDispersion = float(input("Energy dispersion (meV/subpiexel) = "))
 
