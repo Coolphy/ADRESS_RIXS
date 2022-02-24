@@ -35,19 +35,22 @@ def zeroEnergy(xUncorrEnegy, uncorrData):
         height=((np.max(uncorrData) / 50) if (np.max(uncorrData) / 50) > 5 else 5),
         width=3,
     )
-
-    popt, _ = curve_fit(
-        gaussian_norm,
-        xUncorrEnegy[peaks[-1] - 50 : peaks[-1] + 50],
-        uncorrData[peaks[-1] - 50 : peaks[-1] + 50],
-        p0=[0, energyResolution / 1000, properties["peak_heights"][-1], 0, 0],
-        bounds=(
-            [-np.inf, 0, 0, -np.inf, -np.inf],
-            [np.inf, np.inf, np.inf, np.inf, np.inf],
-        ),
-    )
-    # print(popt)
-    xCorrEnergy = xUncorrEnegy - popt[0]
+    try:
+        popt, _ = curve_fit(
+            gaussian_norm,
+            xUncorrEnegy[peaks[-1] - 50 : peaks[-1] + 50],
+            uncorrData[peaks[-1] - 50 : peaks[-1] + 50],
+            p0=[0, energyResolution / 1000, properties["peak_heights"][-1], 0, 0],
+            bounds=(
+                [-np.inf, 0, 0, -np.inf, -np.inf],
+                [np.inf, np.inf, np.inf, np.inf, np.inf],
+            ),
+        )
+        # print(popt)
+        xCorrEnergy = xUncorrEnegy - popt[0]
+    except:
+        xCorrEnergy = xUncorrEnegy
+        print("Can not find elastic peaks !")
     return xCorrEnergy
 
 
