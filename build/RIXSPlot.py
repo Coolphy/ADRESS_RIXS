@@ -35,22 +35,20 @@ def zeroEnergy(xUncorrEnegy, uncorrData):
         height=((np.max(uncorrData) / 50) if (np.max(uncorrData) / 50) > 5 else 5),
         width=3,
     )
-    try:
-        popt, _ = curve_fit(
-            gaussian_norm,
-            xUncorrEnegy[peaks[-1] - 50 : peaks[-1] + 50],
-            uncorrData[peaks[-1] - 50 : peaks[-1] + 50],
-            p0=[0, energyResolution / 1000, properties["peak_heights"][-1], 0, 0],
-            bounds=(
-                [-np.inf, 0, 0, -np.inf, -np.inf],
-                [np.inf, np.inf, np.inf, np.inf, np.inf],
-            ),
-        )
-        # print(popt)
-        xCorrEnergy = xUncorrEnegy - popt[0]
-    except:
-        xCorrEnergy = xUncorrEnegy
-        print("Can not find elastic peaks !")
+
+    popt, _ = curve_fit(
+        gaussian_norm,
+        xUncorrEnegy[peaks[-1] - 50 : peaks[-1] + 50],
+        uncorrData[peaks[-1] - 50 : peaks[-1] + 50],
+        p0=[0, energyResolution / 1000, properties["peak_heights"][-1], 0, 0],
+        bounds=(
+            [-np.inf, 0, 0, -np.inf, -np.inf],
+            [np.inf, np.inf, np.inf, np.inf, np.inf],
+        ),
+    )
+    # print(popt)
+    xCorrEnergy = xUncorrEnegy - popt[0]
+
     return xCorrEnergy
 
 
@@ -127,7 +125,22 @@ def combineData(fileList):
     aveData = sumData / len(fileList)
 
     [energy, data] = elasticShift(xRefData, aveData)
-    xdata = zeroEnergy(energy, data)
+    try:
+        xdata = zeroEnergy(energy, data)
+    except:
+        xdata = energy
+        plt.text(
+            np.min(xdata),
+            np.max(data) * 0.8,
+            "Can not find elastic peak !",
+            color="red",
+            fontsize=16,
+        )
+
+    axs[1, 1].plot(xdata, data)
+    # axs[1, 1].set_title("Calibrated data")
+    axs[1, 1].set_xlabel("Energy Loss (eV)")
+    axs[1, 1].set_ylabel("Photons (Counts)")
 
     return [xdata, data]
 
@@ -145,7 +158,11 @@ for i in range(1000):
     try:
         root = tk.Tk()
         root.withdraw()
-        fileList = list(filedialog.askopenfilenames(title="Select ADRESS data files"))
+        fileList = list(
+            filedialog.askopenfilenames(
+                title="Select ADRESS data files", filetypes=[("HDF5 files", "*.h5")]
+            )
+        )
         # print(fileList)
         if len(fileList) == 0:
             break
@@ -154,10 +171,6 @@ for i in range(1000):
 
         [X, Y] = combineData(fileList)
 
-        axs[1, 1].plot(X, Y)
-        # axs[1, 1].set_title("Calibrated data")
-        axs[1, 1].set_xlabel("Energy Loss (eV)")
-        axs[1, 1].set_ylabel("Photons (Counts)")
         plt.show()
 
         f = filedialog.asksaveasfile(
