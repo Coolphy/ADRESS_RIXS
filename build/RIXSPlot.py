@@ -7,6 +7,13 @@ from scipy.optimize import curve_fit
 import tkinter as tk
 from tkinter import filedialog
 
+from cycler import cycler
+
+custom_cycler = cycler(
+    color=["#0072BD", "#D95319", "#EDB120", "#7E2F8E", "#77AC30", "#4DBEEE", "#A2142F"]
+)
+plt.rc("axes", prop_cycle=custom_cycler)
+
 #%%
 def gaussian_norm(x, mu, omega, amp, a, b):
     sig = omega / 2 / np.sqrt(2 * np.log(2))
@@ -40,10 +47,22 @@ def zeroEnergy(xUncorrEnegy, uncorrData):
         gaussian_norm,
         xUncorrEnegy[peaks[-1] - 50 : peaks[-1] + 50],
         uncorrData[peaks[-1] - 50 : peaks[-1] + 50],
-        p0=[0, energyResolution / 1000, properties["peak_heights"][-1], 0, 0],
+        p0=[
+            0,
+            energyResolution / 1000,
+            properties["prominences"][-1],
+            0,
+            0,
+        ],
         bounds=(
-            [-np.inf, 0, 0, -np.inf, -np.inf],
-            [np.inf, np.inf, np.inf, np.inf, np.inf],
+            [-0.2, 0, 0, 0, 0],
+            [
+                0.2,
+                np.inf,
+                np.inf,
+                np.inf,
+                np.inf,
+            ],
         ),
     )
     # print(popt)
@@ -103,6 +122,89 @@ def getdata(fileName):
     return [xdata, ccd]
 
 
+def getInfo(filename):
+
+    f = h5py.File(filename, "r")
+
+    PhotonEnergy = round(
+        np.mean(f["entry"]["instrument"]["NDAttributes"]["PhotonEnergy"][()]), 3
+    )
+    PolarMode = np.mean(f["entry"]["instrument"]["NDAttributes"]["PolarMode"][()])
+    if PolarMode == 0:
+        Polarization = "LH"
+    elif PolarMode == 1:
+        Polarization = "LV"
+    elif PolarMode == 2:
+        Polarization = "C+"
+    else:
+        Polarization = "C-"
+
+    Temp = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleTemp"][()]), 2)
+
+    xx = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleXs"][()]), 4)
+    yy = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleYs"][()]), 4)
+    zz = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleZ"][()]), 4)
+    Tht = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleTheta"][()]), 3)
+    Phi = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SamplePhi"][()]), 3)
+    Tilt = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleTilt"][()]), 3)
+
+    AcqTime = np.mean(f["entry"]["instrument"]["NDAttributes"]["AcquireTime"][()])
+    SplitTime = np.mean(f["entry"]["instrument"]["NDAttributes"]["ExposureSplit"][()])
+    ExitSlit = np.mean(f["entry"]["instrument"]["NDAttributes"]["ExitSlit"][()])
+    Ring = round(
+        np.mean(f["entry"]["instrument"]["NDAttributes"]["BeamCurrent"][()]), 0
+    )
+    fileInfo = str(
+        "filename: "
+        + filename
+        + "\n"
+        + "PhotonEnergy: "
+        + str(PhotonEnergy)
+        + " eV\n"
+        + "Polarization: "
+        + Polarization
+        + "\n"
+        + "Temp: "
+        + str(Temp)
+        + " K\n"
+        + "Sample X: "
+        + str(xx)
+        + " mm\n"
+        + "Sample Y: "
+        + str(yy)
+        + " mm\n"
+        + "Sample Z: "
+        + str(zz)
+        + " mm\n"
+        + "Theta: "
+        + str(Tht)
+        + " deg.\n"
+        + "Phi: "
+        + str(Phi)
+        + " deg.\n"
+        + "Tilt: "
+        + str(Tilt)
+        + " deg.\n"
+        + "Acquire Time: "
+        + str(AcqTime)
+        + " s\n"
+        + "Split Time: "
+        + str(SplitTime)
+        + " s\n"
+        + "Exit Slit: "
+        + str(ExitSlit)
+        + " um\n"
+        + "Ring Current: "
+        + str(Ring)
+        + " uA\n"
+        + "ELoss(eV)"
+        + "\t"
+        + "Photons(counts)"
+    )
+
+    return fileInfo
+
+
 def combineData(fileList):
 
     for i, s in enumerate(fileList):
@@ -114,6 +216,7 @@ def combineData(fileList):
         if i == 0:
             [xRefData, refData] = [xData, oneData]
             sumData = oneData
+            fileinfo = getInfo(s)
         else:
             oneData = xCorr(refData, oneData)
             sumData = sumData + oneData
@@ -142,7 +245,7 @@ def combineData(fileList):
     axs[1, 1].set_xlabel("Energy Loss (eV)")
     axs[1, 1].set_ylabel("Photons (Counts)")
 
-    return [xdata, data]
+    return [xdata, data, fileinfo]
 
 
 #%%
@@ -169,7 +272,7 @@ for i in range(1000):
 
         fig, axs = plt.subplots(2, 2, figsize=(6.4 * 2, 4.8 * 2))
 
-        [X, Y] = combineData(fileList)
+        [X, Y, info] = combineData(fileList)
 
         plt.show()
 
@@ -188,7 +291,7 @@ for i in range(1000):
             delimiter="\t",
             newline="\n",
             comments="# ",
-            header="ELoss(eV)" + "\n" + "Photons(counts)",
+            header=info,
         )
         f.close()
     except:
