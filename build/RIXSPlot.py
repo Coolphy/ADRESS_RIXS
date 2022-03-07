@@ -196,7 +196,7 @@ def getInfo(filename):
         + " um\n"
         + "Ring Current: "
         + str(Ring)
-        + " uA\n"
+        + " mA\n"
         + "ELoss(eV)"
         + "\t"
         + "Photons(counts)"

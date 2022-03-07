@@ -57,12 +57,21 @@ def elasticShift(pixelData):
     peaks, _ = find_peaks(pixelData,height=100,width=5)
     xdataPixel = np.arange(len(pixelData))
     
-    xdataPixel = xdataPixel[(peaks[-1]-2000):(peaks[-1]+200)]
-    energyData = pixelData[(peaks[-1]-2000):(peaks[-1]+200)]
+    xdataPixel = xdataPixel[(peaks[-1]-3000):(peaks[-1]+200)]
+    energyData = pixelData[(peaks[-1]-3000):(peaks[-1]+200)]
     
     xDataEnergy = (xdataPixel - peaks[-1]) * energyTrans * -1
 
     return [xDataEnergy,energyData]
+
+def xCorr(refData, uncorrData):
+
+    corr = signal.correlate(refData, uncorrData)  # consider full pattern
+    lags = signal.correlation_lags(len(refData), len(uncorrData))
+    lag = lags[np.argmax(corr)]
+    corrData = np.roll(uncorrData, lag)
+
+    return corrData
 
 ```
 
@@ -72,7 +81,7 @@ fig = plt.figure()
 
 
 scans = np.arange(289,293+1)
-sumData = np.zeros(2200)
+sumData = np.zeros(3200)
 
 for i,s in enumerate(scans):
     [xData,oneData] = getdata(s)
@@ -86,7 +95,7 @@ plt.plot(xData,aveData,  label='LV')
 
 
 scans = np.arange(442,446+1)
-sumData = np.zeros(2200)
+sumData = np.zeros(3200)
 
 for i,s in enumerate(scans):
     [xData,oneData] = getdata(s)
