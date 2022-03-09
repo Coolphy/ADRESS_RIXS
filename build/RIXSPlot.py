@@ -2,9 +2,11 @@
 import h5py
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy import signal
+from scipy.signal import find_peaks
+from scipy.signal import correlate
+from scipy.signal import correlation_lags
 from scipy.optimize import curve_fit
-import tkinter as tk
+from tkinter import Tk
 from tkinter import filedialog
 
 from cycler import cycler
@@ -37,7 +39,7 @@ def gaussian_norm(x, mu, omega, amp, a, b):
 
 def zeroEnergy(xUncorrEnegy, uncorrData):
     global energyResolution
-    peaks, properties = signal.find_peaks(
+    peaks, properties = find_peaks(
         uncorrData,
         height=((np.max(uncorrData) / 50) if (np.max(uncorrData) / 50) > 5 else 5),
         width=3,
@@ -73,22 +75,9 @@ def zeroEnergy(xUncorrEnegy, uncorrData):
 
 def xCorr(refData, uncorrData):
 
-    corr = signal.correlate(refData, uncorrData)  # consider full pattern
-    lags = signal.correlation_lags(len(refData), len(uncorrData))
+    corr = correlate(refData, uncorrData)  # consider full pattern
+    lags = correlation_lags(len(refData), len(uncorrData))
     lag = lags[np.argmax(corr)]
-    # uncorrData = np.roll(uncorrData, lag)
-
-    # peaks, _ = signal.find_peaks(refData, height=3, width=3)
-
-    # corr = signal.correlate(
-    #     refData[(peaks[-1] - 50) : (peaks[-1] + 50)],
-    #     uncorrData[(peaks[-1] - 50) : (peaks[-1] + 50)],
-    # )  # just consider elastic peak
-    # lags = signal.correlation_lags(
-    #     len(refData[(peaks[-1] - 50) : (peaks[-1] + 50)]),
-    #     len(uncorrData[(peaks[-1] - 50) : (peaks[-1] + 50)]),
-    # )
-    # lag = lags[np.argmax(corr)]
     corrData = np.roll(uncorrData, lag)
 
     return corrData
@@ -99,7 +88,7 @@ def elasticShift(pixel, data):
     global energyDispersion
     # global dataLength
 
-    peaks, _ = signal.find_peaks(
+    peaks, _ = find_peaks(
         data, height=((np.max(data) / 50) if (np.max(data) / 50) > 5 else 5), width=3
     )  # height and width of the elastic peak
 
@@ -123,84 +112,96 @@ def getdata(fileName):
 
 
 def getInfo(filename):
+    try:
+        f = h5py.File(filename, "r")
 
-    f = h5py.File(filename, "r")
+        PhotonEnergy = round(
+            np.mean(f["entry"]["instrument"]["NDAttributes"]["PhotonEnergy"][()]), 3
+        )
+        PolarMode = np.mean(f["entry"]["instrument"]["NDAttributes"]["PolarMode"][()])
+        if PolarMode == 0:
+            Polarization = "LH"
+        elif PolarMode == 1:
+            Polarization = "LV"
+        elif PolarMode == 2:
+            Polarization = "C+"
+        else:
+            Polarization = "C-"
 
-    PhotonEnergy = round(
-        np.mean(f["entry"]["instrument"]["NDAttributes"]["PhotonEnergy"][()]), 3
-    )
-    PolarMode = np.mean(f["entry"]["instrument"]["NDAttributes"]["PolarMode"][()])
-    if PolarMode == 0:
-        Polarization = "LH"
-    elif PolarMode == 1:
-        Polarization = "LV"
-    elif PolarMode == 2:
-        Polarization = "C+"
-    else:
-        Polarization = "C-"
+        Temp = round(
+            np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleTemp"][()]), 2
+        )
 
-    Temp = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleTemp"][()]), 2)
+        xx = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleXs"][()]), 4)
+        yy = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleYs"][()]), 4)
+        zz = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleZ"][()]), 4)
+        Tht = round(
+            np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleTheta"][()]), 3
+        )
+        Phi = round(
+            np.mean(f["entry"]["instrument"]["NDAttributes"]["SamplePhi"][()]), 3
+        )
+        Tilt = round(
+            np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleTilt"][()]), 3
+        )
 
-    xx = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleXs"][()]), 4)
-    yy = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleYs"][()]), 4)
-    zz = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleZ"][()]), 4)
-    Tht = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleTheta"][()]), 3)
-    Phi = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SamplePhi"][()]), 3)
-    Tilt = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleTilt"][()]), 3)
-
-    AcqTime = np.mean(f["entry"]["instrument"]["NDAttributes"]["AcquireTime"][()])
-    SplitTime = np.mean(f["entry"]["instrument"]["NDAttributes"]["ExposureSplit"][()])
-    ExitSlit = np.mean(f["entry"]["instrument"]["NDAttributes"]["ExitSlit"][()])
-    Ring = round(
-        np.mean(f["entry"]["instrument"]["NDAttributes"]["BeamCurrent"][()]), 0
-    )
-    fileInfo = str(
-        "filename: "
-        + filename
-        + "\n"
-        + "PhotonEnergy: "
-        + str(PhotonEnergy)
-        + " eV\n"
-        + "Polarization: "
-        + Polarization
-        + "\n"
-        + "Temp: "
-        + str(Temp)
-        + " K\n"
-        + "Sample X: "
-        + str(xx)
-        + " mm\n"
-        + "Sample Y: "
-        + str(yy)
-        + " mm\n"
-        + "Sample Z: "
-        + str(zz)
-        + " mm\n"
-        + "Theta: "
-        + str(Tht)
-        + " deg.\n"
-        + "Phi: "
-        + str(Phi)
-        + " deg.\n"
-        + "Tilt: "
-        + str(Tilt)
-        + " deg.\n"
-        + "Acquire Time: "
-        + str(AcqTime)
-        + " s\n"
-        + "Split Time: "
-        + str(SplitTime)
-        + " s\n"
-        + "Exit Slit: "
-        + str(ExitSlit)
-        + " um\n"
-        + "Ring Current: "
-        + str(Ring)
-        + " mA\n"
-        + "ELoss(eV)"
-        + "\t"
-        + "Photons(counts)"
-    )
+        AcqTime = np.mean(f["entry"]["instrument"]["NDAttributes"]["AcquireTime"][()])
+        SplitTime = np.mean(
+            f["entry"]["instrument"]["NDAttributes"]["ExposureSplit"][()]
+        )
+        ExitSlit = np.mean(f["entry"]["instrument"]["NDAttributes"]["ExitSlit"][()])
+        Ring = round(
+            np.mean(f["entry"]["instrument"]["NDAttributes"]["BeamCurrent"][()]), 0
+        )
+        fileInfo = str(
+            "filename: "
+            + filename
+            + "\n"
+            + "PhotonEnergy: "
+            + str(PhotonEnergy)
+            + " eV\n"
+            + "Polarization: "
+            + Polarization
+            + "\n"
+            + "Temp: "
+            + str(Temp)
+            + " K\n"
+            + "Sample X: "
+            + str(xx)
+            + " mm\n"
+            + "Sample Y: "
+            + str(yy)
+            + " mm\n"
+            + "Sample Z: "
+            + str(zz)
+            + " mm\n"
+            + "Theta: "
+            + str(Tht)
+            + " deg.\n"
+            + "Phi: "
+            + str(Phi)
+            + " deg.\n"
+            + "Tilt: "
+            + str(Tilt)
+            + " deg.\n"
+            + "Acquire Time: "
+            + str(AcqTime)
+            + " s\n"
+            + "Split Time: "
+            + str(SplitTime)
+            + " s\n"
+            + "Exit Slit: "
+            + str(ExitSlit)
+            + " um\n"
+            + "Ring Current: "
+            + str(Ring)
+            + " mA\n"
+            + "ELoss(eV)"
+            + "\t"
+            + "Photons(counts)"
+        )
+    except:
+        fileInfo = "Empty file !"
 
     return fileInfo
 
@@ -259,7 +260,7 @@ energyResolution = energyDispersion * 10  # meV
 
 for i in range(1000):
     try:
-        root = tk.Tk()
+        root = Tk()
         root.withdraw()
         fileList = list(
             filedialog.askopenfilenames(
