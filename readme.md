@@ -1,27 +1,42 @@
 ```python
-%matplotlib nbagg
-# import os
 import h5py
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.signal import find_peaks
+from scipy import signal
 # from scipy.optimize import curve_fit
 
-inputFilePath = 'X:\\RIXS\\Ruiz_e18603\\RIXS\\'
-outputFilePath = 'C:\\Users\\gac-x03ma\\Desktop\\ASC\\'
-
-base = 'Cu'
-energyTrans = 0.008128 #eV/subpixel
+path = 'X:\\RIXS\\InHouse_e18695\\CrCl3_Jan_2022\\RIXS\\'
+base = 'Cr'
+energyDispersion = 0.00535 #eV/subpixel
 
 ```
 
 
 ```python
-#os.chdir(outputFilePath)
+def elasticShift(pixelData):
 
-def getdata(scannumber):
-    global inputFilePath
-    global outputFilePath
+    global energyDispersion
+
+    peaks, _ = signal.find_peaks(pixelData,height=10,width=3)
+    xdataPixel = np.arange(len(pixelData))
+    
+    xdataPixel = xdataPixel[(peaks[-1]-2000):(peaks[-1]+200)]
+    energyData = pixelData[(peaks[-1]-2000):(peaks[-1]+200)]
+    
+    xDataEnergy = (xdataPixel - peaks[-1]) * energyDispersion * -1
+
+    return [xDataEnergy,energyData]
+
+def xCorr(refData, uncorrData):
+
+    corr = signal.correlate(refData, uncorrData)  # consider full pattern
+    lag = np.argmax(corr)
+    corrData = np.roll(uncorrData, lag)
+
+    return corrData
+
+def getData(scannumber):
+    global path
     global base
     
     if scannumber < 10:
@@ -33,83 +48,31 @@ def getdata(scannumber):
     else:    
         filename = base+"_"+str(scannumber)
 
-    f1 = h5py.File(inputFilePath+filename+"_d1.h5", 'r')
-    f2 = h5py.File(inputFilePath+filename+"_d2.h5", 'r')
-    f3 = h5py.File(inputFilePath+filename+"_d3.h5", 'r')
+    f1 = h5py.File(path+filename+"_d1.h5", 'r')
+    f2 = h5py.File(path+filename+"_d2.h5", 'r')
+    f3 = h5py.File(path+filename+"_d3.h5", 'r')
 
     ccd1 = f1['entry']['analysis']['spectrum'][()]
     ccd2 = f2['entry']['analysis']['spectrum'][()]
     ccd3 = f3['entry']['analysis']['spectrum'][()]
     
-    [xdata,data1] = elasticShift(ccd1)
-    [_,data2] = elasticShift(ccd2)
-    [_,data3] = elasticShift(ccd3)
-
-    tempData = (data1+data2+data3)/3
-    data = [xdata,tempData]
+    ccd1 = xCorr(ccd2,ccd1)
+    ccd3 = xCorr(ccd2,ccd3)
+    xdata,tempData = elasticShift(ccd1+ccd2+ccd3)
     
-    return data
+    return [xdata,tempData]
 
-def elasticShift(pixelData):
+def getScan(scans):
+    for i,scannumber in enumerate(scans):
+        if i == 0:
+            [xdata,ydata] = getData(scannumber)
+            refdata = ydata
+            sumdata = ydata
+        else:
+            [_,ydata] = getData(scannumber)
+            ydata = xCorr(refdata,ydata)
+            sumdata = sumdata+ydata
+    return [xdata,sumdata]
 
-    global energyTrans
-
-    peaks, _ = find_peaks(pixelData,height=100,width=5)
-    xdataPixel = np.arange(len(pixelData))
-    
-    xdataPixel = xdataPixel[(peaks[-1]-3000):(peaks[-1]+200)]
-    energyData = pixelData[(peaks[-1]-3000):(peaks[-1]+200)]
-    
-    xDataEnergy = (xdataPixel - peaks[-1]) * energyTrans * -1
-
-    return [xDataEnergy,energyData]
-
-def xCorr(refData, uncorrData):
-
-    corr = signal.correlate(refData, uncorrData)  # consider full pattern
-    lags = signal.correlation_lags(len(refData), len(uncorrData))
-    lag = lags[np.argmax(corr)]
-    corrData = np.roll(uncorrData, lag)
-
-    return corrData
-
-```
-
-
-```python
-fig = plt.figure() 
-
-
-scans = np.arange(289,293+1)
-sumData = np.zeros(3200)
-
-for i,s in enumerate(scans):
-    [xData,oneData] = getdata(s)
-    # plt.plot(xData,oneData)
-
-    sumData = sumData+oneData
-
-aveData = sumData/len(scans)
-
-plt.plot(xData,aveData,  label='LV')
-
-
-scans = np.arange(442,446+1)
-sumData = np.zeros(3200)
-
-for i,s in enumerate(scans):
-    [xData,oneData] = getdata(s)
-    # plt.plot(xData,oneData)
-
-    sumData = sumData+oneData
-
-aveData = sumData/len(scans)
-
-plt.plot(xData,aveData, label='LH')
-
-plt.xlabel('Energy Loss (eV)')
-plt.xlim([-1,4])
-plt.title('30% sample @ Cu-edge th=115')
-plt.legend()
 ```
 

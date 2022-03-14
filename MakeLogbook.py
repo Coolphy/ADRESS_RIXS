@@ -17,7 +17,7 @@ def getInfo(filename):
     f = h5py.File(path + "\\" + filename, "r")
 
     PhotonEnergy = round(
-        np.mean(f["entry"]["instrument"]["NDAttributes"]["PhotonEnergy"][()]), 3
+        np.mean(f["entry"]["instrument"]["NDAttributes"]["PhotonEnergy"][()]), 2
     )
     PolarMode = np.mean(f["entry"]["instrument"]["NDAttributes"]["PolarMode"][()])
     if PolarMode == 0:
@@ -31,12 +31,12 @@ def getInfo(filename):
 
     Temp = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleTemp"][()]), 2)
 
-    xx = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleXs"][()]), 4)
-    yy = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleYs"][()]), 4)
-    zz = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleZ"][()]), 4)
-    Tht = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleTheta"][()]), 3)
-    Phi = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SamplePhi"][()]), 3)
-    Tilt = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleTilt"][()]), 3)
+    xx = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleXs"][()]), 3)
+    yy = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleYs"][()]), 3)
+    zz = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleZ"][()]), 3)
+    Tht = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleTheta"][()]), 2)
+    Phi = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SamplePhi"][()]), 2)
+    Tilt = round(np.mean(f["entry"]["instrument"]["NDAttributes"]["SampleTilt"][()]), 2)
 
     AcqTime = np.mean(f["entry"]["instrument"]["NDAttributes"]["AcquireTime"][()])
     SplitTime = np.mean(f["entry"]["instrument"]["NDAttributes"]["ExposureSplit"][()])
@@ -68,9 +68,9 @@ if __name__ == "__main__":
     root = tk.Tk()
     root.withdraw()
     path = filedialog.askdirectory(title="Select data path")
-    print(path)
+    # print(path)
     logdir = os.path.abspath(os.path.dirname(path))
-    print(logdir)
+    # print(logdir)
 
     # path = "C:\\Researches\\Data\\VI3\\202107"
     # path = os.path.split(os.path.realpath(__file__))[0]
@@ -80,12 +80,12 @@ if __name__ == "__main__":
     writer.writerow(
         [
             "Files",
-            "PhotonEnergy(eV)",
-            "Polarization",
+            "Energy(eV)",
+            "Polar",
             "Temperature(K)",
-            "SampleX(mm)",
-            "SampleY(mm)",
-            "SampleZ(mm)",
+            "X(mm)",
+            "Y(mm)",
+            "Z(mm)",
             "Theta",
             "Phi",
             "Tilt",

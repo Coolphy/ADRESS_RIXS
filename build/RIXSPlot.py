@@ -6,9 +6,9 @@ from scipy.signal import find_peaks
 from scipy.signal import correlate
 from scipy.signal import correlation_lags
 from scipy.optimize import curve_fit
-from tkinter import Tk
-from tkinter import filedialog
 
+import tkinter as tk
+from tkinter import filedialog
 from cycler import cycler
 
 custom_cycler = cycler(
@@ -106,9 +106,10 @@ def getdata(fileName):
 
     f = h5py.File(fileName)
     ccd = f["entry"]["analysis"]["spectrum"][()]
+    acqTime = np.mean(f["entry"]["instrument"]["NDAttributes"]["AcquireTime"][()])
     xdata = np.arange(len(ccd))
 
-    return [xdata, ccd]
+    return [xdata, ccd], acqTime
 
 
 def getInfo(filename):
@@ -198,7 +199,7 @@ def getInfo(filename):
             + " mA\n"
             + "ELoss(eV)"
             + "\t"
-            + "Photons(counts)"
+            + "Photons(counts/5 mins)"
         )
     except:
         fileInfo = "Empty file !"
@@ -209,7 +210,7 @@ def getInfo(filename):
 def combineData(fileList):
 
     for i, s in enumerate(fileList):
-        [xData, oneData] = getdata(s)
+        [xData, oneData], acqTime = getdata(s)
         axs[0, 0].plot(xData, oneData)
         # axs[0, 0].set_title("Raw data")
         axs[0, 0].set_xlabel("Positon (Pixels)")
@@ -218,49 +219,59 @@ def combineData(fileList):
             [xRefData, refData] = [xData, oneData]
             sumData = oneData
             fileinfo = getInfo(s)
+            totaltime = acqTime
         else:
             oneData = xCorr(refData, oneData)
             sumData = sumData + oneData
+            totaltime = totaltime + acqTime
         axs[0, 1].plot(xRefData, oneData)
         # axs[0, 1].set_title("Shifted data")
         axs[0, 1].set_xlabel("Positon (Pixels)")
         axs[0, 1].set_ylabel("Photons (Counts)")
-
-    aveData = sumData / len(fileList)
-
-    [energy, data] = elasticShift(xRefData, aveData)
     try:
+        [energy, data] = elasticShift(xRefData, sumData)
         xdata = zeroEnergy(energy, data)
+        ydata = data / totaltime * 300
     except:
         xdata = energy
+        ydata = data / totaltime * 300
         plt.text(
             np.min(xdata),
-            np.max(data) * 0.8,
+            np.max(ydata) * 0.8,
             "Can not find elastic peak !",
             color="red",
             fontsize=16,
         )
 
-    axs[1, 1].plot(xdata, data)
+    axs[1, 1].plot(xdata, ydata)
     # axs[1, 1].set_title("Calibrated data")
     axs[1, 1].set_xlabel("Energy Loss (eV)")
-    axs[1, 1].set_ylabel("Photons (Counts)")
+    axs[1, 1].set_ylabel("Photons (Counts / 5 minutes)")
 
     return [xdata, data, fileinfo]
 
 
-#%%
+# %%
+def getvalue():
+    global energyDispersion, energyResolution
+    value = entry.get()
+    energyDispersion = float(value)
+    energyResolution = energyDispersion * 10  # meV
+    input.destroy()
 
-# dataLength = 2000  # subpixels
 
-energyDispersion = float(input("Energy dispersion (meV/subpiexel) = "))
-
-energyResolution = energyDispersion * 10  # meV
-
+input = tk.Tk()
+input.title("RIXSplot")
+L1 = tk.Label(input, text="Energy Dispersion (meV)")
+L1.pack()
+entry = tk.Entry(input, width=40, justify="center")
+entry.pack()
+button = tk.Button(input, text="Start", command=getvalue).pack()
+input.mainloop()
 
 for i in range(1000):
     try:
-        root = Tk()
+        root = tk.Tk()
         root.withdraw()
         fileList = list(
             filedialog.askopenfilenames(
