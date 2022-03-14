@@ -25,7 +25,7 @@ def elasticShift(pixelData):
     
     xDataEnergy = (xdataPixel - peaks[-1]) * energyDispersion * -1
 
-    return [xDataEnergy,energyData]
+    return xDataEnergy,energyData
 
 def xCorr(refData, uncorrData):
 
@@ -52,27 +52,27 @@ def getData(scannumber):
     f2 = h5py.File(path+filename+"_d2.h5", 'r')
     f3 = h5py.File(path+filename+"_d3.h5", 'r')
 
-    ccd1 = f1['entry']['analysis']['spectrum'][()]
-    ccd2 = f2['entry']['analysis']['spectrum'][()]
-    ccd3 = f3['entry']['analysis']['spectrum'][()]
+    ccd1 = np.array(f1['entry']['analysis']['spectrum'][()])
+    ccd2 = np.array(f2['entry']['analysis']['spectrum'][()])
+    ccd3 = np.array(f3['entry']['analysis']['spectrum'][()])
     
     ccd1 = xCorr(ccd2,ccd1)
     ccd3 = xCorr(ccd2,ccd3)
     xdata,tempData = elasticShift(ccd1+ccd2+ccd3)
     
-    return [xdata,tempData]
+    return xdata,tempData
 
 def getScan(scans):
     for i,scannumber in enumerate(scans):
         if i == 0:
-            [xdata,ydata] = getData(scannumber)
+            xdata,ydata = getData(scannumber)
             refdata = ydata
             sumdata = ydata
         else:
-            [_,ydata] = getData(scannumber)
+            _,ydata = getData(scannumber)
             ydata = xCorr(refdata,ydata)
             sumdata = sumdata+ydata
-    return [xdata,sumdata]
+    return xdata,sumdata
 
 ```
 
