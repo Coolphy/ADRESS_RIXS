@@ -17,7 +17,7 @@ def elasticShift(pixelData):
 
     global energyDispersion
 
-    peaks, _ = signal.find_peaks(pixelData,height=10,width=3)
+    peaks, _ = signal.find_peaks(pixelData,height=10,width=6)
     xdataPixel = np.arange(len(pixelData))
     
     xdataPixel = xdataPixel[(peaks[-1]-2000):(peaks[-1]+200)]
@@ -29,7 +29,7 @@ def elasticShift(pixelData):
 
 def xCorr(refData, uncorrData):
 
-    corr = signal.correlate(refData, uncorrData)  # consider full pattern
+    corr = signal.correlate(refData, uncorrData)
     lag = np.argmax(corr)
     corrData = np.roll(uncorrData, lag)
 
