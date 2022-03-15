@@ -40,17 +40,17 @@ def getData(scannumber):
     global base
     
     if scannumber < 10:
-        filename = base+"_"+"000"+str(scannumber)
+        filename = base+'_'+'000'+str(scannumber)
     elif scannumber < 100:
-        filename = base+"_"+"00"+str(scannumber)
+        filename = base+'_'+'00'+str(scannumber)
     elif scannumber < 1000:    
-        filename = base+"_"+"0"+str(scannumber)
+        filename = base+'_'+'0'+str(scannumber)
     else:    
-        filename = base+"_"+str(scannumber)
+        filename = base+'_'+str(scannumber)
 
-    f1 = h5py.File(path+filename+"_d1.h5", 'r')
-    f2 = h5py.File(path+filename+"_d2.h5", 'r')
-    f3 = h5py.File(path+filename+"_d3.h5", 'r')
+    f1 = h5py.File(path+filename+'_d1.h5', 'r')
+    f2 = h5py.File(path+filename+'_d2.h5', 'r')
+    f3 = h5py.File(path+filename+'_d3.h5', 'r')
 
     ccd1 = np.array(f1['entry']['analysis']['spectrum'][()])
     ccd2 = np.array(f2['entry']['analysis']['spectrum'][()])
