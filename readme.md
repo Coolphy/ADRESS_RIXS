@@ -5,9 +5,10 @@ import matplotlib.pyplot as plt
 from scipy import signal
 # from scipy.optimize import curve_fit
 
-path = 'X:\\RIXS\\InHouse_e18695\\CrCl3_Jan_2022\\RIXS\\'
-base = 'Cr'
-energyDispersion = 0.00535 #eV/subpixel
+if __name__ == "__main__":
+	path = 'X:\\RIXS\\InHouse_e18695\\CrCl3_Jan_2022\\RIXS\\'
+	base = 'Cr'
+	energyDispersion = 0.00535 #eV/subpixel
 
 ```
 
