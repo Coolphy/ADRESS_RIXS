@@ -102,14 +102,16 @@ def getvalue():
 
 
 input = tk.Tk()
-input.title("RIXSplot")
-L1 = tk.Label(input, text="RIXS data input path")
-L1.pack()
-entry1 = tk.Entry(input, width=60, justify="center")
-entry1.pack()
-L2 = tk.Label(input, text="Logbook output path")
-L2.pack()
-entry2 = tk.Entry(input, width=60, justify="center")
-entry2.pack()
-button = tk.Button(input, text="Make a logbook", command=getvalue).pack()
+input.title("RIXSLog")
+L1 = tk.Label(input, text="RIXS data path", font=48)
+L1.grid(row=0, column=0)
+entry1 = tk.Entry(input, width=80, font=48)
+entry1.grid(row=0, column=1)
+L2 = tk.Label(input, text="Logbook output path", font=48)
+L2.grid(row=1, column=0)
+entry2 = tk.Entry(input, width=80, font=48)
+entry2.grid(row=1, column=1)
+button = tk.Button(input, text="Make a logbook", font=48, command=getvalue).grid(
+    row=2, column=1
+)
 input.mainloop()
