@@ -257,6 +257,7 @@ def getvalue():
     value = entry.get()
     energyDispersion = float(value)
     energyResolution = energyDispersion * 10  # meV
+    input.quit()
     input.destroy()
 
 
