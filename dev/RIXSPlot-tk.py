@@ -1,15 +1,17 @@
 # %%
+from importlib import import_module
 import h5py
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import find_peaks
 from scipy.signal import correlate
-from scipy.signal import correlation_lags
 from scipy.optimize import curve_fit
 
 import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.backend_bases import key_press_handler
+
+# import os
 
 
 # %%
@@ -213,6 +215,10 @@ def CombineData(scans):
 def plot():
     global Path, start, stop, energyDispersion
     Path = entry1.get()
+
+    # for file in os.listdir(Path):
+    #     listbox.insert(0, file)
+
     start = int(entry2.get())
     stop = int(entry3.get())
     scans = [start + x for x in range(stop - start + 1)]
@@ -236,7 +242,6 @@ entry1 = tk.Entry(root, width=70, font=48)
 entry1.grid(row=0, column=2)
 
 listbox = tk.Listbox(root, listvariable=[], height=45, selectmode="extended")
-
 listbox.grid(row=1, column=0, columnspan=2, sticky="nwes")
 
 L2 = tk.Label(root, text="Start", font=48)
