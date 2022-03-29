@@ -238,11 +238,11 @@ root.wm_title("RIXSPlot in Tk")
 
 L1 = tk.Label(root, text="RIXS data path", font=48)
 L1.grid(row=0, column=0, columnspan=2)
-entry1 = tk.Entry(root, width=70, font=48)
-entry1.grid(row=0, column=2)
+entry1 = tk.Entry(root, width=60, font=48)
+entry1.grid(row=0, column=2, sticky="w")
 
 listbox = tk.Listbox(root, listvariable=[], height=45, selectmode="extended")
-listbox.grid(row=1, column=0, columnspan=2, sticky="nwes")
+listbox.grid(row=1, column=0, columnspan=2, sticky="nwes", padx=10, pady=10)
 
 L2 = tk.Label(root, text="Start", font=48)
 L2.grid(row=2, column=0)
@@ -266,12 +266,14 @@ refElasticPixel = 4000
 
 canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
 canvas.draw()
-canvas.get_tk_widget().grid(row=1, column=2, rowspan=5, columnspan=2)
+canvas.get_tk_widget().grid(
+    row=1, column=2, rowspan=5, columnspan=2, sticky="nwes", padx=10, pady=10
+)
 
 toolbar = NavigationToolbar2Tk(canvas, root, pack_toolbar=False)
-toolbar.grid(row=0, column=3)
+toolbar.grid(row=0, column=3, sticky="nw")
 toolbar.update()
-canvas.get_tk_widget().grid(row=1, column=2, rowspan=5, columnspan=2)
+# canvas.get_tk_widget().grid(row=1, column=2, rowspan=5, columnspan=2, sticky="nwes")
 
 
 def on_key_press(event):
@@ -281,10 +283,10 @@ def on_key_press(event):
 
 canvas.mpl_connect("key_press_event", on_key_press)
 
-col_count, row_count = root.grid_size()
-for col in range(col_count):
-    root.grid_columnconfigure(col, minsize=120)
-for row in range(row_count):
-    root.grid_rowconfigure(row, minsize=40)
+# col_count, row_count = root.grid_size()
+# for col in range(col_count):
+#     root.grid_columnconfigure(col, minsize=120)
+# for row in range(row_count):
+#     root.grid_rowconfigure(row, minsize=40)
 
 tk.mainloop()
