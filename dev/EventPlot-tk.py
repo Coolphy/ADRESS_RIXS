@@ -112,6 +112,7 @@ def plot():
 
     Atom = entry2.get()
     Scan = int(entry3.get())
+    DataLength = int(entry4.get())
 
     plt.clf()
 
@@ -168,11 +169,11 @@ def plot():
     # fig.add_subplot(235).scatter(*np.transpose(ccd2), s=0.2)
     # fig.add_subplot(236).scatter(*np.transpose(ccd3), s=0.2)
 
-    line1, _, _ = np.histogram2d(*np.transpose(ccd1), bins=[1, 6000])
-    line2, _, _ = np.histogram2d(*np.transpose(ccd2), bins=[1, 6000])
-    line3, _, _ = np.histogram2d(*np.transpose(ccd3), bins=[1, 6000])
+    line1, _, _ = np.histogram2d(*np.transpose(ccd1), bins=[1, DataLength * 4])
+    line2, _, _ = np.histogram2d(*np.transpose(ccd2), bins=[1, DataLength * 4])
+    line3, _, _ = np.histogram2d(*np.transpose(ccd3), bins=[1, DataLength * 4])
 
-    xPixel = np.arange(6000)
+    xPixel = np.arange(DataLength * 4)
     fig.add_subplot(234).scatter(xPixel, *line1, s=0.5)
     fig.add_subplot(235).scatter(xPixel, *line2, s=0.5)
     fig.add_subplot(236).scatter(xPixel, *line3, s=0.5)
@@ -247,19 +248,23 @@ L3 = tk.Label(root, text="Scannumber", font=48)
 L3.grid(row=3, column=0)
 entry3 = tk.Entry(root, width=10, font=48)
 entry3.grid(row=3, column=1)
+L4 = tk.Label(root, text="Pixelnumber", font=48)
+L4.grid(row=4, column=0)
+entry4 = tk.Entry(root, width=10, font=48)
+entry4.grid(row=4, column=1)
 
 button = tk.Button(master=root, text="Plot", width=10, font=48, command=plot)
-button.grid(row=4, column=0, columnspan=2)
+button.grid(row=5, column=0, columnspan=2)
 
-text1 = tk.Text(root, height=20, width=30, font=36)
-text1.grid(row=5, column=0, columnspan=2, sticky="nwes", padx=10, pady=10)
+text1 = tk.Text(root, height=18, width=30, font=36)
+text1.grid(row=6, column=0, columnspan=2, sticky="nwes", padx=10, pady=10)
 
 fig = plt.figure(figsize=(4.8 * 3, 3.6 * 2))
 
 canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
 canvas.draw()
 canvas.get_tk_widget().grid(
-    row=1, column=2, rowspan=5, columnspan=2, sticky="nwes", padx=10, pady=10
+    row=1, column=2, rowspan=6, columnspan=2, sticky="nwes", padx=10, pady=10
 )
 
 toolbar = NavigationToolbar2Tk(canvas, root, pack_toolbar=False)
