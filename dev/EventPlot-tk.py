@@ -27,8 +27,8 @@ def MakeFileName(scanNumber):
     return fileName
 
 
-def Gaussian_amp(x, xc, fwhm, amp):
-    return amp * np.exp(-4 * np.log(2) * (x - xc) ** 2 / (fwhm) ** 2)
+def Gaussian_amp(x, xc, fwhm, amp, y0):
+    return amp * np.exp(-4 * np.log(2) * (x - xc) ** 2 / (fwhm) ** 2) + y0
 
 
 def poly2(x, p0, p1, p2):
@@ -60,6 +60,14 @@ def curventureFit(xdata, ydata):
     ]
     popt, _ = curve_fit(poly2, xdata3, ydata3)
 
+    xdata4 = xdata[
+        ((poly2(xdata, *popt) - 20) < ydata) & (ydata < (poly2(xdata, *popt) + 20))
+    ]
+    ydata4 = ydata[
+        ((poly2(xdata, *popt) - 20) < ydata) & (ydata < (poly2(xdata, *popt) + 20))
+    ]
+    popt, _ = curve_fit(poly2, xdata4, ydata4)
+
     print(popt)
     return popt
 
@@ -75,9 +83,9 @@ def peakFit(ydata):
     xdata = np.arange(len(ydata))
     popt, _ = curve_fit(
         Gaussian_amp,
-        xdata[(np.argmax(ydata) - 50) : (np.argmax(ydata) + 50)],
-        ydata[(np.argmax(ydata) - 50) : (np.argmax(ydata) + 50)],
-        p0=[center, 3.0, np.max(ydata)],
+        xdata[(np.argmax(ydata) - 100) : (np.argmax(ydata) + 100)],
+        ydata[(np.argmax(ydata) - 100) : (np.argmax(ydata) + 100)],
+        p0=[center, 3.0, np.max(ydata), 0],
     )
     print(popt)
     return popt
@@ -107,8 +115,9 @@ def plot():
     Path = entry1.get()
 
     listbox.delete(0, tk.END)
-    for file in os.listdir(Path):
-        listbox.insert(0, file)
+    list = sorted(os.listdir(Path))
+    for file in list:
+        listbox.insert(tk.END, file)
 
     Atom = entry2.get()
     Scan = int(entry3.get())
