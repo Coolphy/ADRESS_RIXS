@@ -121,9 +121,39 @@ def plot():
     fig.add_subplot(232).scatter(*np.transpose(ccd2), s=0.2)
     fig.add_subplot(233).scatter(*np.transpose(ccd3), s=0.2)
 
+    text1.delete("1.0", tk.END)
+
     p1 = curventureFit(*np.transpose(ccd1))
     p2 = curventureFit(*np.transpose(ccd2))
     p3 = curventureFit(*np.transpose(ccd3))
+
+    text1.insert(
+        tk.END,
+        format(p1[0], ".3e")
+        + " x^2\n"
+        + format(p1[1], ".3e")
+        + " x\n"
+        + format(p1[2], ".3e")
+        + "\n",
+    )
+    text1.insert(
+        tk.END,
+        format(p2[0], ".3e")
+        + " x^2\n"
+        + format(p2[1], ".3e")
+        + " x\n"
+        + format(p2[2], ".3e")
+        + "\n",
+    )
+    text1.insert(
+        tk.END,
+        format(p3[0], ".3e")
+        + " x^2\n"
+        + format(p3[1], ".3e")
+        + " x\n"
+        + format(p3[2], ".3e")
+        + "\n",
+    )
 
     xAxis = np.arange(1632)
     plt.subplot(231).plot(xAxis, poly2(xAxis, *p1), c="r")
@@ -151,6 +181,43 @@ def plot():
     fit2 = peakFit(np.array(*line2))
     fit3 = peakFit(np.array(*line3))
 
+    text1.insert(
+        tk.END,
+        "xc = "
+        + format(fit1[0], ".3f")
+        + "\n"
+        + "fwhm = "
+        + format(fit1[1], ".3f")
+        + "\n"
+        + "Amp = "
+        + format(fit1[2], ".3f")
+        + "\n",
+    )
+    text1.insert(
+        tk.END,
+        "xc = "
+        + format(fit2[0], ".3f")
+        + "\n"
+        + "fwhm = "
+        + format(fit2[1], ".3f")
+        + "\n"
+        + "Amp = "
+        + format(fit2[2], ".3f")
+        + "\n",
+    )
+    text1.insert(
+        tk.END,
+        "xc = "
+        + format(fit3[0], ".3f")
+        + "\n"
+        + "fwhm = "
+        + format(fit3[1], ".3f")
+        + "\n"
+        + "Amp = "
+        + format(fit3[2], ".3f")
+        + "\n",
+    )
+
     plt.subplot(234).plot(xPixel, Gaussian_amp(xPixel, *fit1), c="r")
     plt.subplot(235).plot(xPixel, Gaussian_amp(xPixel, *fit2), c="r")
     plt.subplot(236).plot(xPixel, Gaussian_amp(xPixel, *fit3), c="r")
@@ -167,7 +234,9 @@ L1.grid(row=0, column=0, columnspan=2)
 entry1 = tk.Entry(root, width=60, font=48)
 entry1.grid(row=0, column=2, sticky="w")
 
-listbox = tk.Listbox(root, listvariable=[], height=45, selectmode="extended")
+listbox = tk.Listbox(
+    root, listvariable=[], height=20, width=20, font=36, selectmode="extended"
+)
 listbox.grid(row=1, column=0, columnspan=2, sticky="nwes", padx=10, pady=10)
 
 L2 = tk.Label(root, text="Atom", font=48)
@@ -182,12 +251,15 @@ entry3.grid(row=3, column=1)
 button = tk.Button(master=root, text="Plot", width=10, font=48, command=plot)
 button.grid(row=4, column=0, columnspan=2)
 
+text1 = tk.Text(root, height=20, width=30, font=36)
+text1.grid(row=5, column=0, columnspan=2, sticky="nwes", padx=10, pady=10)
+
 fig = plt.figure(figsize=(4.8 * 3, 3.6 * 2))
 
 canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
 canvas.draw()
 canvas.get_tk_widget().grid(
-    row=1, column=2, rowspan=4, columnspan=2, sticky="nwes", padx=10, pady=10
+    row=1, column=2, rowspan=5, columnspan=2, sticky="nwes", padx=10, pady=10
 )
 
 toolbar = NavigationToolbar2Tk(canvas, root, pack_toolbar=False)
