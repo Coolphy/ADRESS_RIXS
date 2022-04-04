@@ -35,38 +35,50 @@ def poly2(x, p0, p1, p2):
     return p0 * x ** 2 + p1 * x + p2
 
 
+def poly1(x, p0, p1):
+    return p0 * x + p1
+
+
 def curventureFit(xdata, ydata):
-    popt, _ = curve_fit(poly2, xdata, ydata)
+    popt, _ = curve_fit(poly1, xdata, ydata)
     xdata1 = xdata[
-        ((poly2(816, *popt) - 200) < ydata) & (ydata < (poly2(816, *popt) + 200))
+        ((poly1(816, *popt) - 200) < ydata) & (ydata < (poly1(816, *popt) + 200))
     ]
     ydata1 = ydata[
-        ((poly2(816, *popt) - 200) < ydata) & (ydata < (poly2(816, *popt) + 200))
+        ((poly1(816, *popt) - 200) < ydata) & (ydata < (poly1(816, *popt) + 200))
     ]
-    popt, _ = curve_fit(poly2, xdata1, ydata1)
+    popt, _ = curve_fit(poly1, xdata1, ydata1)
     xdata2 = xdata[
-        ((poly2(xdata, *popt) - 100) < ydata) & (ydata < (poly2(xdata, *popt) + 100))
+        ((poly1(816, *popt) - 100) < ydata) & (ydata < (poly1(816, *popt) + 100))
     ]
     ydata2 = ydata[
-        ((poly2(xdata, *popt) - 100) < ydata) & (ydata < (poly2(xdata, *popt) + 100))
+        ((poly1(816, *popt) - 100) < ydata) & (ydata < (poly1(816, *popt) + 100))
     ]
     popt, _ = curve_fit(poly2, xdata2, ydata2)
 
     xdata3 = xdata[
-        ((poly2(xdata, *popt) - 20) < ydata) & (ydata < (poly2(xdata, *popt) + 20))
+        ((poly2(xdata, *popt) - 50) < ydata) & (ydata < (poly2(xdata, *popt) + 50))
     ]
     ydata3 = ydata[
-        ((poly2(xdata, *popt) - 20) < ydata) & (ydata < (poly2(xdata, *popt) + 20))
+        ((poly2(xdata, *popt) - 50) < ydata) & (ydata < (poly2(xdata, *popt) + 50))
     ]
     popt, _ = curve_fit(poly2, xdata3, ydata3)
 
     xdata4 = xdata[
-        ((poly2(xdata, *popt) - 20) < ydata) & (ydata < (poly2(xdata, *popt) + 20))
+        ((poly2(xdata, *popt) - 30) < ydata) & (ydata < (poly2(xdata, *popt) + 30))
     ]
     ydata4 = ydata[
-        ((poly2(xdata, *popt) - 20) < ydata) & (ydata < (poly2(xdata, *popt) + 20))
+        ((poly2(xdata, *popt) - 30) < ydata) & (ydata < (poly2(xdata, *popt) + 30))
     ]
     popt, _ = curve_fit(poly2, xdata4, ydata4)
+
+    xdata5 = xdata[
+        ((poly2(xdata, *popt) - 20) < ydata) & (ydata < (poly2(xdata, *popt) + 20))
+    ]
+    ydata5 = ydata[
+        ((poly2(xdata, *popt) - 20) < ydata) & (ydata < (poly2(xdata, *popt) + 20))
+    ]
+    popt, _ = curve_fit(poly2, xdata5, ydata5)
 
     print(popt)
     return popt

@@ -1,3 +1,4 @@
+# %%
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import signal
@@ -15,3 +16,13 @@ plt.plot(y)
 plt.plot(lags, correlation / 100)
 plt.plot(correlation / 100)
 plt.show()
+
+# %%
+import numpy as np
+
+x = np.asarray([1,2,3,2,1,0,0,0,0,0])
+print(x)
+
+y = x[(x>1) & (x>np.roll(x,-1))]
+print(y[0])
+# %%
