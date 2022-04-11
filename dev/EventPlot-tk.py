@@ -10,6 +10,7 @@ import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.backend_bases import key_press_handler
 
+import sys
 import os
 
 
@@ -306,5 +307,5 @@ canvas.mpl_connect("key_press_event", on_key_press)
 #     root.grid_columnconfigure(col, minsize=120)
 # for row in range(row_count):
 #     root.grid_rowconfigure(row, minsize=40)
-
+root.protocol("WM_DELETE_WINDOW", lambda: sys.exit(0))
 tk.mainloop()

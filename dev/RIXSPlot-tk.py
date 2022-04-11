@@ -12,7 +12,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolb
 from matplotlib.backend_bases import key_press_handler
 
 # import os
-
+import sys
 
 # %%
 def MakeFileName(scanNumber):
@@ -289,4 +289,5 @@ canvas.mpl_connect("key_press_event", on_key_press)
 # for row in range(row_count):
 #     root.grid_rowconfigure(row, minsize=40)
 
+root.protocol("WM_DELETE_WINDOW", lambda: sys.exit(0))
 tk.mainloop()

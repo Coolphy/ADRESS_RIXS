@@ -271,17 +271,19 @@ button = tk.Button(input, text="Start", command=getvalue).pack()
 input.mainloop()
 
 for i in range(1000):
-    try:
-        root = tk.Tk()
-        root.withdraw()
-        fileList = list(
-            filedialog.askopenfilenames(
-                title="Select ADRESS data files", filetypes=[("HDF5 files", "*.h5")]
-            )
+
+    root = tk.Tk()
+    root.withdraw()
+    fileList = list(
+        filedialog.askopenfilenames(
+            title="Select ADRESS data files", filetypes=[("HDF5 files", "*.h5")]
         )
-        # print(fileList)
-        if len(fileList) == 0:
-            break
+    )
+    # print(fileList)
+    if len(fileList) == 0:
+        break
+
+    try:
 
         fig, axs = plt.subplots(2, 2, figsize=(6.4 * 2, 4.8 * 2))
 
@@ -310,4 +312,3 @@ for i in range(1000):
     except:
         print("Broken files !")
         plt.close()
-    continue

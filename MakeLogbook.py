@@ -101,4 +101,6 @@ if __name__ == "__main__":
             writer.writerow(getInfo(x))
         except:
             print("file " + str(x) + " is broken!")
-        continue
+
+    f.close()
+    print("Logbook is saved in " + logdir)
