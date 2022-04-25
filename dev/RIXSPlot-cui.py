@@ -6,6 +6,7 @@ from scipy.signal import find_peaks
 from scipy.signal import correlate
 from scipy.signal import correlation_lags
 from scipy.optimize import curve_fit
+from scipy.interpolate import interp1d
 
 import tkinter as tk
 from tkinter import filedialog
@@ -75,10 +76,32 @@ def zeroEnergy(xUncorrEnegy, uncorrData):
 
 def xCorr(refData, uncorrData):
 
-    corr = correlate(refData, uncorrData)  # consider full pattern
-    lags = correlation_lags(len(refData), len(uncorrData))
+    xAxis = np.arange(len(refData))
+    xAxisNew = np.arange(0,len(refData)-1,0.1)
+    f1 = interp1d(xAxis,refData,kind='linear',fill_value="extrapolate")
+    f2 = interp1d(xAxis,uncorrData,kind='linear',fill_value="extrapolate")
+
+    refInt = f1(xAxisNew)
+    uncorrInt = f2(xAxisNew)
+
+    corr = correlate(refInt, uncorrInt)  # consider full pattern
+    lags = correlation_lags(len(refInt), len(uncorrInt))
     lag = lags[np.argmax(corr)]
-    corrData = np.roll(uncorrData, lag)
+
+    # elastic corr
+    uncorrInt = np.roll(uncorrInt, lag)
+    peaks, _ = find_peaks(
+        refInt, height=np.max(refInt)/5 , width=3
+    )
+    corr = correlate(refInt[peaks[-1]-1000:peaks[-1]+500], uncorrInt[peaks[-1]-1000:peaks[-1]+500]) 
+    lags = correlation_lags(len(refInt[peaks[-1]-1000:peaks[-1]+500]), len(uncorrInt[peaks[-1]-1000:peaks[-1]+500]))
+    lag = lags[np.argmax(corr)]
+
+    corrInt = np.roll(uncorrInt, lag)
+
+    f3 = interp1d(xAxisNew,corrInt,kind='linear',fill_value="extrapolate")
+
+    corrData = f3(xAxis)
 
     return corrData
 
@@ -93,9 +116,6 @@ def elasticShift(pixel, data):
     )  # height and width of the elastic peak
 
     axs[1, 0].plot(pixel - peaks[-1], data)
-    # axs[1, 0].set_title("Combined data")
-    axs[1, 0].set_xlabel("Positon (Pixels)")
-    axs[1, 0].set_ylabel("Photons (Counts)")
 
     xDataEnergy = (pixel - peaks[-1]) * energyDispersion / 1000 * -1
 
@@ -212,9 +232,7 @@ def combineData(fileList):
     for i, s in enumerate(fileList):
         [xData, oneData], acqTime = getdata(s)
         axs[0, 0].plot(xData, oneData)
-        # axs[0, 0].set_title("Raw data")
-        axs[0, 0].set_xlabel("Positon (Pixels)")
-        axs[0, 0].set_ylabel("Photons (Counts)")
+
         if i == 0:
             [xRefData, refData] = [xData, oneData]
             sumData = oneData
@@ -225,9 +243,7 @@ def combineData(fileList):
             sumData = sumData + oneData
             totaltime = totaltime + acqTime
         axs[0, 1].plot(xRefData, oneData)
-        # axs[0, 1].set_title("Shifted data")
-        axs[0, 1].set_xlabel("Positon (Pixels)")
-        axs[0, 1].set_ylabel("Photons (Counts)")
+
     try:
         [energy, data] = elasticShift(xRefData, sumData)
         xdata = zeroEnergy(energy, data)
@@ -244,9 +260,6 @@ def combineData(fileList):
         )
 
     axs[1, 1].plot(xdata, ydata)
-    # axs[1, 1].set_title("Calibrated data")
-    axs[1, 1].set_xlabel("Energy Loss (eV)")
-    axs[1, 1].set_ylabel("Photons (Counts / 5 minutes)")
 
     return [xdata, data, fileinfo]
 
@@ -285,7 +298,24 @@ for i in range(1000):
 
     try:
 
-        fig, axs = plt.subplots(2, 2, figsize=(6.4 * 2, 4.8 * 2))
+        fig, axs = plt.subplots(2, 2,figsize=(6.4*2, 4.8*2))
+        # axs[0, 0].set_title("Raw data")
+        axs[0, 0].set_xlabel("Positon (Pixels)")
+        axs[0, 0].set_ylabel("Photons (Counts)")
+        # axs[0, 1].set_title("Shifted data")
+        axs[0, 1].set_xlabel("Positon (Pixels)")
+        axs[0, 1].set_ylabel("Photons (Counts)")
+        # axs[1, 0].set_title("Combined data")
+        axs[1, 0].set_xlabel("Positon (Pixels)")
+        axs[1, 0].set_ylabel("Photons (Counts)")
+        # axs[1, 1].set_title("Calibrated data")
+        axs[1, 1].set_xlabel("Energy Loss (eV)")
+        axs[1, 1].set_ylabel("Photons (Counts / 5 minutes)")
+        plt.subplot(221).grid(1)
+        plt.subplot(222).grid(1)
+        plt.subplot(223).grid(1)
+        plt.subplot(224).grid(1)
+
 
         [X, Y, info] = combineData(fileList)
 

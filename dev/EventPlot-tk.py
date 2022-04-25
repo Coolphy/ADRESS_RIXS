@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import correlate
 from scipy.optimize import curve_fit
+from scipy.optimize import least_squares
 
 import tkinter as tk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
@@ -35,6 +36,8 @@ def Gaussian_amp(x, xc, fwhm, amp, y0):
 def poly2(x, p0, p1, p2):
     return p0 * x ** 2 + p1 * x + p2
 
+def lsq_poly2(x, t, y):
+    return y - (x[0] * t ** 2 + x[1] * t + x[2])
 
 def poly1(x, p0, p1):
     return p0 * x + p1
@@ -58,18 +61,18 @@ def curventureFit(xdata, ydata):
     popt, _ = curve_fit(poly2, xdata2, ydata2)
 
     xdata3 = xdata[
-        ((poly2(xdata, *popt) - 50) < ydata) & (ydata < (poly2(xdata, *popt) + 50))
+        ((poly2(xdata, *popt) - 100) < ydata) & (ydata < (poly2(xdata, *popt) + 100))
     ]
     ydata3 = ydata[
-        ((poly2(xdata, *popt) - 50) < ydata) & (ydata < (poly2(xdata, *popt) + 50))
+        ((poly2(xdata, *popt) - 100) < ydata) & (ydata < (poly2(xdata, *popt) + 100))
     ]
     popt, _ = curve_fit(poly2, xdata3, ydata3)
 
     xdata4 = xdata[
-        ((poly2(xdata, *popt) - 30) < ydata) & (ydata < (poly2(xdata, *popt) + 30))
+        ((poly2(xdata, *popt) - 50) < ydata) & (ydata < (poly2(xdata, *popt) + 50))
     ]
     ydata4 = ydata[
-        ((poly2(xdata, *popt) - 30) < ydata) & (ydata < (poly2(xdata, *popt) + 30))
+        ((poly2(xdata, *popt) - 50) < ydata) & (ydata < (poly2(xdata, *popt) + 50))
     ]
     popt, _ = curve_fit(poly2, xdata4, ydata4)
 
@@ -80,9 +83,11 @@ def curventureFit(xdata, ydata):
         ((poly2(xdata, *popt) - 20) < ydata) & (ydata < (poly2(xdata, *popt) + 20))
     ]
     popt, _ = curve_fit(poly2, xdata5, ydata5)
-
-    print(popt)
-    return popt
+    
+    x0=np.array([*popt])
+    res_robust = least_squares(lsq_poly2, x0, loss='soft_l1', f_scale=0.005, args=(xdata5, ydata5))
+    
+    return res_robust.x
 
 
 def curventureSubtract(ccd, popt):
