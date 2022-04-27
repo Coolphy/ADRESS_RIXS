@@ -4,11 +4,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import signal
 
-if __name__ == "__main__":
-    projectPath = 'X:/RIXS/Asmara'
-    baseAtom = 'O'
-    energyDispersion = 0.00535 #eV/subpixel
-
 def get_xas(scanNumber):
     global projectPath
     global baseAtom
@@ -75,6 +70,11 @@ def get_scan(scans):
             ydata = x_corr(refdata,ydata)
             sumdata = sumdata+ydata
     return xdata,sumdata
+
+if __name__ == "__main__":
+    projectPath = 'X:/RIXS/Asmara'
+    baseAtom = 'O'
+    energyDispersion = 0.00535 #eV/subpixel
 
 ```
 
