@@ -12,7 +12,6 @@ if __name__ == "__main__":
 def get_xas(scanNumber):
     global projectPath
     global baseAtom
-    
     if scanNumber < 10:
         filename = baseAtom+'_'+'000'+str(scanNumber)
     elif scanNumber < 100:
@@ -21,42 +20,31 @@ def get_xas(scanNumber):
         filename = baseAtom+'_'+'0'+str(scanNumber)
     else:    
         filename = baseAtom+'_'+str(scanNumber)
-
     data = np.loadtxt(projectPath+'/XAS/'+filename+'.xas', comments='#')
-
     photonEnergy = data[:,0]
     TEY = data[:,1]
     TFY = data[:,2]
     RMU = data[:,3]
-    
     return photonEnergy,TEY,TFY,RMU
 
 def elastic_shift(pixelData):
-
     global energyDispersion
-
     peaks, _ = signal.find_peaks(pixelData,height=10,width=6)
     xdataPixel = np.arange(len(pixelData))
-    
     xdataPixel = xdataPixel[(peaks[-1]-2000):(peaks[-1]+200)]
     energyData = pixelData[(peaks[-1]-2000):(peaks[-1]+200)]
-    
     xDataEnergy = (xdataPixel - peaks[-1]) * energyDispersion * -1
-
     return xDataEnergy,energyData
 
 def x_corr(refData, uncorrData):
-
     corr = signal.correlate(refData, uncorrData)
     lag = np.argmax(corr)
     corrData = np.roll(uncorrData, lag)
-
     return corrData
 
 def get_rixs(scannumber):
     global projectPath
     global baseAtom
-    
     if scannumber < 10:
         filename = baseAtom+'_'+'000'+str(scannumber)
     elif scannumber < 100:
@@ -65,19 +53,15 @@ def get_rixs(scannumber):
         filename = baseAtom+'_'+'0'+str(scannumber)
     else:    
         filename = baseAtom+'_'+str(scannumber)
-
     f1 = h5py.File(path+'/RIXS/'+filename+'_d1.h5', 'r')
     f2 = h5py.File(path+'/RIXS/'+filename+'_d2.h5', 'r')
     f3 = h5py.File(path+'/RIXS/'+filename+'_d3.h5', 'r')
-
     ccd1 = np.array(f1['entry']['analysis']['spectrum'][()])
     ccd2 = np.array(f2['entry']['analysis']['spectrum'][()])
     ccd3 = np.array(f3['entry']['analysis']['spectrum'][()])
-    
     ccd1 = x_corr(ccd2,ccd1)
     ccd3 = x_corr(ccd2,ccd3)
     xdata,tempData = elastic_shift(ccd1+ccd2+ccd3)
-    
     return xdata,tempData
 
 def get_scan(scans):
