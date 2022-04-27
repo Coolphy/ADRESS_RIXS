@@ -48,9 +48,9 @@ def get_rixs(scannumber):
         filename = baseAtom+'_'+'0'+str(scannumber)
     else:    
         filename = baseAtom+'_'+str(scannumber)
-    f1 = h5py.File(path+'/RIXS/'+filename+'_d1.h5', 'r')
-    f2 = h5py.File(path+'/RIXS/'+filename+'_d2.h5', 'r')
-    f3 = h5py.File(path+'/RIXS/'+filename+'_d3.h5', 'r')
+    f1 = h5py.File(projectPath+'/RIXS/'+filename+'_d1.h5', 'r')
+    f2 = h5py.File(projectPath+'/RIXS/'+filename+'_d2.h5', 'r')
+    f3 = h5py.File(projectPath+'/RIXS/'+filename+'_d3.h5', 'r')
     ccd1 = np.array(f1['entry']['analysis']['spectrum'][()])
     ccd2 = np.array(f2['entry']['analysis']['spectrum'][()])
     ccd3 = np.array(f3['entry']['analysis']['spectrum'][()])

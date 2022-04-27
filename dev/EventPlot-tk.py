@@ -85,7 +85,7 @@ def curventureFit(xdata, ydata):
     popt, _ = curve_fit(poly2, xdata5, ydata5)
     
     x0=np.array([*popt])
-    res_robust = least_squares(lsq_poly2, x0, loss='soft_l1', f_scale=0.005, args=(xdata5, ydata5))
+    res_robust = least_squares(lsq_poly2, x0, loss='soft_l1', f_scale=0.1, args=(xdata5, ydata5))
     
     return res_robust.x
 
@@ -128,6 +128,13 @@ def GetData(scanNumber):
     return ccd1, ccd2, ccd3
 
 
+def GetLength(scanNumber):
+    global Path
+    f1 = h5py.File(Path + "/" + MakeFileName(scanNumber) + "_d1.h5", "r")
+    roiY = f1["entry"]["instrument"]["NDAttributes"]["ROIArraySizeY"][()]
+    roi = np.mean(roiY)
+    return roi
+
 def plot():
     global Path, Atom, Scan
     Path = entry1.get()
@@ -136,10 +143,11 @@ def plot():
     list = sorted(os.listdir(Path))
     for file in list:
         listbox.insert(tk.END, file)
+    listbox.see(tk.END)
 
     Atom = entry2.get()
     Scan = int(entry3.get())
-    DataLength = int(entry4.get())
+    DataLength = int(GetLength(Scan))
 
     plt.clf()
 
@@ -157,29 +165,26 @@ def plot():
 
     text1.insert(
         tk.END,
-        format(p1[0], ".3e")
-        + " x^2\n"
-        + format(p1[1], ".3e")
-        + " x\n"
-        + format(p1[2], ".3e")
+        format(p1[1], ".3e")
+        + "\tx\n"
+        + format(p1[0], ".3e")
+        + "\tx^2\n"
         + "\n",
     )
     text1.insert(
         tk.END,
-        format(p2[0], ".3e")
-        + " x^2\n"
-        + format(p2[1], ".3e")
-        + " x\n"
-        + format(p2[2], ".3e")
+        format(p2[1], ".3e")
+        + "\tx\n"
+        + format(p2[0], ".3e")
+        + "\tx^2\n"
         + "\n",
     )
     text1.insert(
         tk.END,
-        format(p3[0], ".3e")
-        + " x^2\n"
-        + format(p3[1], ".3e")
-        + " x\n"
-        + format(p3[2], ".3e")
+        format(p3[1], ".3e")
+        + "\tx\n"
+        + format(p3[0], ".3e")
+        + "\tx^2\n"
         + "\n",
     )
 
@@ -196,9 +201,12 @@ def plot():
     # fig.add_subplot(235).scatter(*np.transpose(ccd2), s=0.2)
     # fig.add_subplot(236).scatter(*np.transpose(ccd3), s=0.2)
 
-    line1, _, _ = np.histogram2d(*np.transpose(ccd1), bins=[1, DataLength * 4])
-    line2, _, _ = np.histogram2d(*np.transpose(ccd2), bins=[1, DataLength * 4])
-    line3, _, _ = np.histogram2d(*np.transpose(ccd3), bins=[1, DataLength * 4])
+    xedges = np.array([1,1634])
+    yedges = np.linspace(0,DataLength,DataLength *4+1)
+
+    line1, xedges, yedges = np.histogram2d(*np.transpose(ccd1), bins=(1, yedges))
+    line2, xedges, yedges = np.histogram2d(*np.transpose(ccd2), bins=(1, yedges))
+    line3, xedges, yedges = np.histogram2d(*np.transpose(ccd3), bins=(1, yedges))
 
     xPixel = np.arange(DataLength * 4)
     fig.add_subplot(234).scatter(xPixel, *line1, s=0.5)
@@ -211,39 +219,30 @@ def plot():
 
     text1.insert(
         tk.END,
-        "xc = "
-        + format(fit1[0], ".3f")
-        + "\n"
-        + "fwhm = "
-        + format(fit1[1], ".3f")
+        "fwhm = "
+        + format(fit1[1]/4, ".3f")
         + "\n"
         + "Amp = "
         + format(fit1[2], ".3f")
-        + "\n",
+        + "\n\n",
     )
     text1.insert(
         tk.END,
-        "xc = "
-        + format(fit2[0], ".3f")
-        + "\n"
-        + "fwhm = "
-        + format(fit2[1], ".3f")
+        "fwhm = "
+        + format(fit2[1]/4, ".3f")
         + "\n"
         + "Amp = "
         + format(fit2[2], ".3f")
-        + "\n",
+        + "\n\n",
     )
     text1.insert(
         tk.END,
-        "xc = "
-        + format(fit3[0], ".3f")
-        + "\n"
-        + "fwhm = "
-        + format(fit3[1], ".3f")
+        "fwhm = "
+        + format(fit3[1]/4, ".3f")
         + "\n"
         + "Amp = "
         + format(fit3[2], ".3f")
-        + "\n",
+        + "\n\n",
     )
 
     plt.subplot(234).plot(xPixel, Gaussian_amp(xPixel, *fit1), c="r")
@@ -275,10 +274,6 @@ L3 = tk.Label(root, text="Scannumber", font=48)
 L3.grid(row=3, column=0)
 entry3 = tk.Entry(root, width=10, font=48)
 entry3.grid(row=3, column=1)
-L4 = tk.Label(root, text="Pixelnumber", font=48)
-L4.grid(row=4, column=0)
-entry4 = tk.Entry(root, width=10, font=48)
-entry4.grid(row=4, column=1)
 
 button = tk.Button(master=root, text="Plot", width=10, font=48, command=plot)
 button.grid(row=5, column=0, columnspan=2)
