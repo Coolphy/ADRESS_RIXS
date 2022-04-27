@@ -22,10 +22,10 @@ def get_xas(scanNumber):
         filename = baseAtom+'_'+str(scanNumber)
     data = np.loadtxt(projectPath+'/XAS/'+filename+'.xas', comments='#')
     photonEnergy = data[:,0]
-    TEY = data[:,1]
-    TFY = data[:,2]
-    RMU = data[:,3]
-    return photonEnergy,TEY,TFY,RMU
+    tey = data[:,1]
+    tfy = data[:,2]
+    rmu = data[:,3]
+    return photonEnergy,tey,tfy,rmu
 
 def elastic_shift(pixelData):
     global energyDispersion
