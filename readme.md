@@ -8,10 +8,7 @@ if __name__ == "__main__":
     projectPath = 'X:/RIXS/Asmara'
     baseAtom = 'O'
     energyDispersion = 0.00535 #eV/subpixel
-```
 
-
-```python
 def get_xas(scanNumber):
     global projectPath
     global baseAtom
@@ -57,17 +54,17 @@ def x_corr(refData, uncorrData):
     return corrData
 
 def get_rixs(scannumber):
-    global path
-    global base
+    global projectPath
+    global baseAtom
     
     if scannumber < 10:
-        filename = base+'_'+'000'+str(scannumber)
+        filename = baseAtom+'_'+'000'+str(scannumber)
     elif scannumber < 100:
-        filename = base+'_'+'00'+str(scannumber)
+        filename = baseAtom+'_'+'00'+str(scannumber)
     elif scannumber < 1000:    
-        filename = base+'_'+'0'+str(scannumber)
+        filename = baseAtom+'_'+'0'+str(scannumber)
     else:    
-        filename = base+'_'+str(scannumber)
+        filename = baseAtom+'_'+str(scannumber)
 
     f1 = h5py.File(path+'/RIXS/'+filename+'_d1.h5', 'r')
     f2 = h5py.File(path+'/RIXS/'+filename+'_d2.h5', 'r')
