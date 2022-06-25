@@ -3,9 +3,17 @@ import h5py
 import numpy as np
 import csv
 import tkinter as tk
-
+import time
 # from tkinter import filedialog
 
+
+def TimeStampToTime(timestamp):
+    timeStruct = time.localtime(timestamp)
+    return time.strftime('%Y-%m-%d %H:%M:%S',timeStruct)
+
+def get_FileCreateTime(filePath):
+    t = os.path.getctime(filePath)
+    return TimeStampToTime(t)
 
 def listFile(fileDir):
     list = sorted(os.listdir(fileDir))
@@ -45,6 +53,7 @@ def getInfo(inputpath, filename):
     Ring = round(
         np.mean(f["entry"]["instrument"]["NDAttributes"]["BeamCurrent"][()]), 0
     )
+    Date = get_FileCreateTime(inputpath + "/" + filename)
     fileInfo = [
         filename[:-6],
         PhotonEnergy,
@@ -60,6 +69,7 @@ def getInfo(inputpath, filename):
         SplitTime,
         ExitSlit,
         Ring,
+        Date,
     ]
     return fileInfo
 
@@ -84,6 +94,7 @@ def makeLog(inputpath, outputpath):
             "SplitTime(s)",
             "Slit(um)",
             "RingCurrent",
+            "Date",
         ]
     )
 

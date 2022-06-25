@@ -5,6 +5,17 @@ import csv
 import tkinter as tk
 from tkinter import filedialog
 
+import time
+import datetime
+
+
+def TimeStampToTime(timestamp):
+    timeStruct = time.localtime(timestamp)
+    return time.strftime('%Y-%m-%d %H:%M:%S',timeStruct)
+
+def get_FileCreateTime(filePath):
+    t = os.path.getctime(filePath)
+    return TimeStampToTime(t)
 
 def listFile(fileDir):
     list = sorted(os.listdir(fileDir))
@@ -44,6 +55,7 @@ def getInfo(filename):
     Ring = round(
         np.mean(f["entry"]["instrument"]["NDAttributes"]["BeamCurrent"][()]), 0
     )
+    Date = get_FileCreateTime(path + "\\" + filename)
     fileInfo = [
         filename[:-6],
         PhotonEnergy,
@@ -59,6 +71,7 @@ def getInfo(filename):
         SplitTime,
         ExitSlit,
         Ring,
+        Date,
     ]
     return fileInfo
 
@@ -93,6 +106,7 @@ if __name__ == "__main__":
             "SplitTime(s)",
             "Slit(um)",
             "RingCurrent",
+            "Date"
         ]
     )
 
