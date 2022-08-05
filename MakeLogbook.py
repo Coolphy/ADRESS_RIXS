@@ -14,7 +14,8 @@ def TimeStampToTime(timestamp):
     return time.strftime('%Y-%m-%d %H:%M:%S',timeStruct)
 
 def get_FileCreateTime(filePath):
-    t = os.path.getctime(filePath)
+    # t = os.path.getctime(filePath)
+    t = os.path.getmtime(filePath)
     return TimeStampToTime(t)
 
 def listFile(fileDir):

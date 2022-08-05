@@ -59,7 +59,7 @@ def get_rixs(scannumber):
     xdata,tempData = elastic_shift(ccd1+ccd2+ccd3)
     return xdata,tempData
 
-def get_scan(scans):
+def combine_rixs(scans):
     for i,scannumber in enumerate(scans):
         if i == 0:
             xdata,ydata = get_rixs(scannumber)
