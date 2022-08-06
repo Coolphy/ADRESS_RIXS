@@ -232,9 +232,8 @@ def openpath():
 
 def savedata():
     global Data
-    label = entry2.get()
     outputfile = filedialog.asksaveasfile(mode="w",filetypes=[("txt file", ".txt")],defaultextension=".txt",title="Save the spectrum as")
-    np.savetxt(outputfile, Data, delimiter='\t',header=label, comments='# ')
+    np.savetxt(outputfile, Data, delimiter=',')
     outputfile.close()
 
 

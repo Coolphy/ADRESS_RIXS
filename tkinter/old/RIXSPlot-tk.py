@@ -8,8 +8,6 @@ from scipy.signal import correlate
 from scipy.optimize import curve_fit
 
 import tkinter as tk
-from tkinter import filedialog
-
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 from matplotlib.backend_bases import key_press_handler
 
@@ -175,7 +173,7 @@ def CombineData(scans):
     return [energyAxis, energyData]
 
 
-def readfiles():
+def readfiles(self):
     Path = entry1.get()
     listbox.delete(0, tk.END)
     list = sorted(os.listdir(Path))
@@ -183,14 +181,9 @@ def readfiles():
         listbox.insert(tk.END, file)
     listbox.see(tk.END)
 
-def readfiles_enter(self):
-    readfiles()
 
-def plotdata_double(self):
-    plotdata()
-
-def plotdata():
-    global Path, energyDispersion, Data
+def plot():
+    global Path, energyDispersion
     Path = entry1.get()
 
     scans = []
@@ -213,9 +206,6 @@ def plotdata():
     if var1.get() == 0:
         plt.cla()
     [X, Y] = CombineData(scans)
-
-    Data = np.transpose([X, Y])
-
     label = entry2.get()
     plt.plot(X + shift, Y, label=label)
     # axs[1, 1].set_title("Calibrated data")
@@ -224,33 +214,17 @@ def plotdata():
     plt.legend()
     plt.draw()
 
-def openpath():
-    path = filedialog.askdirectory(title="Select data path")
-    entry1.delete(0, tk.END)
-    entry1.insert(tk.END,path)
-    readfiles()
-
-def savedata():
-    global Data
-    label = entry2.get()
-    outputfile = filedialog.asksaveasfile(mode="w",filetypes=[("txt file", ".txt")],defaultextension=".txt",title="Save the spectrum as")
-    np.savetxt(outputfile, Data, delimiter='\t',header=label, comments='# ')
-    outputfile.close()
-
-
 
 # %%
-Data = np.array([])
-
 root = tk.Tk()
 root.wm_title("RIXSPlot for ADRESS")
 
-L1 = tk.Button(root, text="RIXS data path", font=48,command=openpath)
+L1 = tk.Label(root, text="RIXS data path", font=48)
 L1.grid(row=0, column=0, columnspan=2)
 entry1 = tk.Entry(root, width=60, font=48)
 entry1.grid(row=0, column=2, sticky="w")
 
-entry1.bind('<Return>', readfiles_enter)
+entry1.bind('<Return>', readfiles)
 
 listbox = tk.Listbox(root,
                      listvariable=[],
@@ -258,8 +232,6 @@ listbox = tk.Listbox(root,
                      height=30,
                      selectmode="extended")
 listbox.grid(row=1, column=0, columnspan=2, sticky="nwes", padx=10, pady=10)
-
-listbox.bind('<Double-1>', plotdata_double)
 
 L4 = tk.Label(root, text="Energy Dispersion", font=48)
 L4.grid(row=2, column=0)
@@ -279,11 +251,8 @@ entry2 = tk.Entry(root, width=20, font=48)
 entry2.insert(tk.END, 'Untitled')
 entry2.grid(row=4, column=1)
 
-button1 = tk.Button(master=root, text="Plot", width=10, font=48, command=plotdata)
-button1.grid(row=5, column=0)
-
-button2 = tk.Button(master=root, text="Save", width=10, font=48, command=savedata)
-button2.grid(row=5, column=1)
+button = tk.Button(master=root, text="Plot", width=10, font=48, command=plot)
+button.grid(row=5, column=0, columnspan=2)
 
 var1 = tk.IntVar()
 c1 = tk.Checkbutton(root,
