@@ -190,7 +190,7 @@ def plotdata_double(self):
     plotdata()
 
 def plotdata():
-    global Path, energyDispersion, Data
+    global Path, energyDispersion, Data, headline
     Path = entry1.get()
 
     scans = []
@@ -202,19 +202,26 @@ def plotdata():
 
     if var1.get() == 0:
         text1.delete('1.0', tk.END)
+        plt.cla()
+        Data = np.array([])
+        headline = ''
 
     for x in scans:
         fileInfo = getInfo(x)
         text1.insert(tk.END, fileInfo)
 
     energyDispersion = float(entry4.get())
-    shift = float(entry3.get())
 
-    if var1.get() == 0:
-        plt.cla()
     [X, Y] = CombineData(scans)
 
-    Data = np.transpose([X, Y])
+    if Data.size == 0 :
+        Data = np.transpose([X, Y])
+        headline = entry2.get()
+    else:
+        Data = np.hstack((Data, np.transpose([X, Y])))
+        headline =  headline + '\t' + entry2.get()
+
+    shift = float(entry3.get())
 
     label = entry2.get()
     plt.plot(X + shift, Y, label=label)
@@ -231,16 +238,16 @@ def openpath():
     readfiles()
 
 def savedata():
-    global Data
-    label = entry2.get()
+    global Data, headline
     outputfile = filedialog.asksaveasfile(mode="w",filetypes=[("txt file", ".txt")],defaultextension=".txt",title="Save the spectrum as")
-    np.savetxt(outputfile, Data, delimiter='\t',header=label, comments='# ')
+    np.savetxt(outputfile, Data, delimiter='\t',header=headline, comments='# ')
     outputfile.close()
 
 
 
 # %%
 Data = np.array([])
+headline = ''
 
 root = tk.Tk()
 root.wm_title("RIXSPlot for ADRESS")
