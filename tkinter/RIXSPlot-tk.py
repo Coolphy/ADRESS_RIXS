@@ -190,15 +190,16 @@ def plotdata_double(self):
     plotdata()
 
 def plotdata():
-    global Path, energyDispersion, Data, headline
+    global Path,scans, energyDispersion, Data, headline
     Path = entry1.get()
 
-    scans = []
     cname = listbox.curselection()
 
-    for i in cname:
-        op = listbox.get(i)
-        scans.append(op)
+    if len(cname) != 0:
+        scans = []
+        for i in cname:
+            op = listbox.get(i)
+            scans.append(op)
 
     if var1.get() == 0:
         text1.delete('1.0', tk.END)
@@ -213,15 +214,14 @@ def plotdata():
     energyDispersion = float(entry4.get())
 
     [X, Y] = CombineData(scans)
+    shift = float(entry3.get())
 
     if Data.size == 0 :
-        Data = np.transpose([X, Y])
+        Data = np.transpose([X + shift, Y])
         headline = entry2.get()
     else:
-        Data = np.hstack((Data, np.transpose([X, Y])))
+        Data = np.hstack((Data, np.transpose([X + shift, Y])))
         headline =  headline + '\t' + entry2.get()
-
-    shift = float(entry3.get())
 
     label = entry2.get()
     plt.plot(X + shift, Y, label=label)
@@ -246,6 +246,7 @@ def savedata():
 
 
 # %%
+scans=[]
 Data = np.array([])
 headline = ''
 

@@ -7,14 +7,9 @@ from scipy import signal
 def get_xas(scanNumber):
     global projectPath
     global baseAtom
-    if scanNumber < 10:
-        filename = baseAtom+'_'+'000'+str(scanNumber)
-    elif scanNumber < 100:
-        filename = baseAtom+'_'+'00'+str(scanNumber)
-    elif scanNumber < 1000:    
-        filename = baseAtom+'_'+'0'+str(scanNumber)
-    else:    
-        filename = baseAtom+'_'+str(scanNumber)
+    
+    filename = baseAtom+'_%.4d'%scannumber
+
     data = np.loadtxt(projectPath+'/XAS/'+filename+'.xas', comments='#')
     photonEnergy = data[:,0]
     tey = data[:,1]
@@ -40,14 +35,9 @@ def x_corr(refData, uncorrData):
 def get_rixs(scannumber):
     global projectPath
     global baseAtom
-    if scannumber < 10:
-        filename = baseAtom+'_'+'000'+str(scannumber)
-    elif scannumber < 100:
-        filename = baseAtom+'_'+'00'+str(scannumber)
-    elif scannumber < 1000:    
-        filename = baseAtom+'_'+'0'+str(scannumber)
-    else:    
-        filename = baseAtom+'_'+str(scannumber)
+    
+    filename = baseAtom+'_%.4d'%scannumber
+
     f1 = h5py.File(projectPath+'/RIXS/'+filename+'_d1.h5', 'r')
     f2 = h5py.File(projectPath+'/RIXS/'+filename+'_d2.h5', 'r')
     f3 = h5py.File(projectPath+'/RIXS/'+filename+'_d3.h5', 'r')
