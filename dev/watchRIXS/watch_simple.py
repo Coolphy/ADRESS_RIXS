@@ -1,7 +1,7 @@
 import sys
 import os
 import time
-from h5py import File
+import h5py
 import numpy as np
 import matplotlib.pyplot as plt
 import threading
@@ -16,9 +16,6 @@ class watch_rixs():
         self.fileName = sorted(os.listdir(self.fileDir))[-1]
         self.ax.set_xlim(0,6000)
 
-        # self.bx = self.fig.add_subplot(122)
-        # self.bx.set_xticks([])
-        # self.bx.set_yticks([])
 
     def update_plot(self):
         self.fileName = sorted(os.listdir(self.fileDir))[-1]
@@ -32,15 +29,33 @@ class watch_rixs():
         self.ax.plot(xdata, ydata)
         self.ax.set_xlim(xmin, xmax)
         # self.ax.set_ylim(ymin, ymax)
-        self.ax.set_title(str(self.fileName))
-
-        # meta_data = h5File.load_meta()
-        # for key in meta_data:
-        #     meta_print = meta_print + key+' = '+meta_data[key]+'\n'
-
-        # self.bx.text(0, 1, meta_print, ha='left',wrap=True)
+        self.ax.set_title(str(self.fileName[0:-6]))
 
         plt.draw()
+
+        meta_data = h5File.load_meta()
+        # print(meta_data)
+
+        useful_strings = [
+            "PhotonEnergy",
+            "PolarMode",
+            "SampleTemp",
+            "SampleXs",
+            "SampleYs",
+            "SampleZ",
+            "SampleTheta",
+            "SamplePhi",
+            "SampleTilt",
+            "AcquireTime",
+            "ExposureSplit",
+            "ExitSlit",
+            "BeamCurrent",
+            ]
+        print('##############################')
+        print(self.fileName[0:-6])
+        for key in useful_strings:
+            print(key+' = '+str(meta_data[key]))
+        print('##############################')
 
     def show_plot(self):
         plt.show() 
@@ -48,7 +63,7 @@ class watch_rixs():
 class adress_rixs():
 
     def __init__(self,fileName):
-        self.f = File(fileName,'r')
+        self.f = h5py.File(fileName,'r')
 
     def load_data(self):
         ccd = self.f["entry"]["analysis"]["spectrum"][()]
@@ -71,7 +86,7 @@ def update_plot(w):
             w.update_plot()
         except:
             continue
-        time.sleep(3)
+        time.sleep(300)
 
 def main(fileDir):
     global quit_flag
