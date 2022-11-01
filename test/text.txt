@@ -1,0 +1,35 @@
+moveto samy 1.999
+moveto samz 4.000
+moveto samt 80.000
+moveto phi 45.000
+set energy=574.000
+set polar=LV
+set split=1
+set exposure=01:00
+acquire
+moveby samz 0.005
+acquire
+moveby samz 0.005
+acquire
+moveby samz 0.005
+acquire
+moveby samz 0.005
+acquire
+acquire
+moveby samz 0.005
+acquire
+moveby samz 0.005
+acquire
+moveby samz 0.005
+acquire
+moveby samz 0.005
+acquire
+acquire
+moveby samz 0.005
+acquire
+moveby samz 0.005
+acquire
+moveby samz 0.005
+acquire
+moveby samz 0.005
+acquire
