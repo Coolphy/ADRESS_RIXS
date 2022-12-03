@@ -71,9 +71,10 @@ class load_mda:
             )
 
 
+# %%
 if __name__ == "__main__":
 
-    fileName = "C:/Researches/Scripts/mda/mdaPythonUtils/X03MA_PC_0044"
+    fileName = "C:/Researches/Data/VI3/202211/MDA/X03MA_PC_0022"
     s = load_mda()
     s.load(f"{fileName}.mda")
     s.reform()
