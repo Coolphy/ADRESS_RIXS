@@ -1,24 +1,48 @@
 
 %%%%%%%%%%%%%%%%%
+init
+global rixs_struct
 global path
 global base
 global energy_dispersion
-path = 'C:/';
+path = 'C:\Researches\Scripts\plotRIXS\test\';
 base = 'Fe';
 energy_dispersion = 0.004;
+%%%%%%%%%%%%%%%%
+
+[x,y] = load_runs([26:1:35]);
+plot(x,y)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%
+
+function init
 exist rixs_struct;
 if ~ans
 global rixs_struct
 rixs_struct = struct([]);
 end
-%%%%%%%%%%%%%%%%
+end
 
-[x,y] = load_runs([1:1:20])
-
-%%%%%%%%%%%%%%%
 function ccd = load_h5(filename)
-% ccd=h5read(filename,'/entry/analysis/spectrum');
-ccd = [1,2,3,4,5]
+ccd=h5read(filename,'/entry/analysis/spectrum');
+% ccd = [1,2,3,4,5]
 end
 
 function filename = make_name(runnumber)
