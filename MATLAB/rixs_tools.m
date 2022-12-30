@@ -77,7 +77,7 @@ end
 function energydata = zeroenergy(pixeldata,tempdata)
 global energy_dispersion;
 [pks,locs,w,p] = findpeaks(tempdata,'MinPeakHeight',max(tempdata)/20,'MinPeakProminence',3,'MinPeakWidth',4);
-zeropixel = locs(size(locs,1));
+zeropixel = locs(size(locs,2));
 energydata = (pixeldata - zeropixel) .* energy_dispersion;
 end
 
