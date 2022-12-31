@@ -83,7 +83,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(
-            QCoreApplication.translate("MainWindow", "XASViewer", None)
+            QCoreApplication.translate("MainWindow", "MDAViewer", None)
         )
         self.pushButton_2.setText(
             QCoreApplication.translate("MainWindow", "Save", None)
