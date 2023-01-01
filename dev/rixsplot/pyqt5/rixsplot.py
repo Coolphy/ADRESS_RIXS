@@ -1,16 +1,6 @@
-# -*- coding: utf-8 -*-
-
-################################################################################
-## Form generated from reading UI file 'uieVoYJS.ui'
-##
-## Created by: Qt User Interface Compiler version 6.3.2
-##
-## WARNING! All changes made in this file will be lost when recompiling UI file!
-################################################################################
-
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from PySide6.QtWidgets import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 import sys
 import os
@@ -22,7 +12,7 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 from matplotlib.figure import Figure
 
 import h5py
-from scipy.signal import correlate, correlation_lags
+from scipy.signal import correlate
 
 
 class rixs_tools(object):
@@ -45,7 +35,7 @@ class rixs_tools(object):
         tempuncorr = uncorrData[(xData > xrange[0]) & (xData < xrange[1])]
 
         corr = correlate(tempref, tempuncorr)
-        lags = correlation_lags(len(tempref), len(tempuncorr))
+        lags = np.arange(-len(tempref) + 1, len(tempuncorr))
         lag = lags[np.argmax(corr)]
         corrData = np.roll(uncorrData, lag)
 
