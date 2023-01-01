@@ -1,9 +1,8 @@
-function ccd = load_ccd(runnumber)
-global path
-filename = make_name(runnumber);
-ccd = [];
-for i = 1:3
-fullname = sprintf('%s/%s_d%d.h5',path,filename,i);
-ccd(i,:) = load_h5(fullname);
+function data = load_ccd(filelist,dirname)
+filenumber=length(filelist);
+data=[];
+for i=1:filenumber
+filename = filelist{i};
+data(i,:)=load_h5([dirname,'/',filename]);
 end
 end

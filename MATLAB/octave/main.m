@@ -1,5 +1,7 @@
 %%
+try
 pkg load signal;
+end
 
 global path
 global base
