@@ -14,7 +14,8 @@ epath = uicontrol(f,'Style','edit',...
 llist = uicontrol(f,'Style','listbox',...
     'Position',[11 50 170 670],'Units','normalized','max',10000);
 
-aplot = axes(f,'Units','pixels','Position',[220 70 780 640],'Units','normalized');
+aplot = axes(f,'Units','pixels','Position',[220 70 780 640],'Units','normalized',...
+    'ButtonDownFcn',@aplot_Callback);
 
 bload = uicontrol(f,'Style','pushbutton',...
     'String','Load','Position',[11 17 100 22],'Units','normalized',...
@@ -55,6 +56,11 @@ bsave = uicontrol(f,'Style','pushbutton',...
     set(llist,'String',{fileinfo.name});
   end
 
+  function aplot_Callback(src,event)
+    currentposition  = get(aplot,'CurrentPoint');
+    set(ezero,'String',num2str(currentposition(1,1)));
+  end
+
   function bload_Callback(src,event)
     global data
     global dirname
@@ -83,8 +89,8 @@ bsave = uicontrol(f,'Style','pushbutton',...
       plot(data(i,:));
       hold on;
     end
-    set(aplot,'XLim',xlimit)
-    set(aplot,'YLim',ylimit)
+    set(aplot,'XLim',xlimit);
+    set(aplot,'YLim',ylimit);
     hold off;
 
   end
@@ -127,7 +133,7 @@ bsave = uicontrol(f,'Style','pushbutton',...
   function bsave_Callback(src,event)
     global xdata
     global ydata
-    filename = uiputfile ({'*.txt', 'Text files'})
+    filename = uiputfile ({'*.txt', 'Text files'});
     dlmwrite(filename,[xdata;ydata].','delimiter','\t','-append');
   end
 
