@@ -134,8 +134,8 @@ end
 function bsave_Callback(src,event)
 global xdata
 global ydata
-filename = uiputfile ({'*.txt', 'Text files'});
-dlmwrite(filename,[xdata;ydata].','delimiter','\t','-append');
+[fname, fpath, fltidx] = uiputfile ({'*.txt', 'Text files'});
+dlmwrite([fpath,fname],[xdata;ydata].','delimiter','\t','-append');
 end
 
 function f_Callback(src,event)
