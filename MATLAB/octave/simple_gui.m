@@ -5,7 +5,7 @@ pkg load signal
 end
 
 % Create UIFigure
-f = figure('Position',[100 100 1024 768],...
+f = figure('Position',[50 50 1024 768],...
 'DeleteFcn',@f_Callback);
 
 % Construct the components.
@@ -143,7 +143,7 @@ dlmwrite([fpath,fname],[xdata;ydata].','delimiter','\t','-append');
 end
 
 function f_Callback(src,event)
-quit
+% quit
 end
 
 end
