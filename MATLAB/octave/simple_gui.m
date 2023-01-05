@@ -1,5 +1,9 @@
 function simple_gui
 
+try
+pkg load signal
+end
+
 % Create UIFigure
 f = figure('Position',[100 100 1024 768],...
 'DeleteFcn',@f_Callback);
