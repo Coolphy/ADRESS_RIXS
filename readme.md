@@ -2,69 +2,63 @@
 import h5py
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy import signal
-
-def get_xas(scanNumber):
-    global projectPath
-    global baseAtom
-    
-    filename = baseAtom+'_%.4d'%scannumber
-
-    data = np.loadtxt(projectPath+'/XAS/'+filename+'.xas', comments='#')
-    photonEnergy = data[:,0]
-    tey = data[:,1]
-    tfy = data[:,2]
-    rmu = data[:,3]
-    return photonEnergy,tey,tfy,rmu
-
-def elastic_shift(pixelData):
-    global energyDispersion
-    peaks, _ = signal.find_peaks(pixelData,height=10,width=6)
-    xdataPixel = np.arange(len(pixelData))
-    xdataPixel = xdataPixel[(peaks[-1]-2000):(peaks[-1]+200)]
-    energyData = pixelData[(peaks[-1]-2000):(peaks[-1]+200)]
-    xDataEnergy = (xdataPixel - peaks[-1]) * energyDispersion * -1
-    return xDataEnergy,energyData
-
-def x_corr(refData, uncorrData):
-    corr = signal.correlate(refData, uncorrData)
-    lag = np.argmax(corr)
-    corrData = np.roll(uncorrData, lag)
-    return corrData
-
-def get_rixs(scannumber):
-    global projectPath
-    global baseAtom
-    
-    filename = baseAtom+'_%.4d'%scannumber
-
-    f1 = h5py.File(projectPath+'/RIXS/'+filename+'_d1.h5', 'r')
-    f2 = h5py.File(projectPath+'/RIXS/'+filename+'_d2.h5', 'r')
-    f3 = h5py.File(projectPath+'/RIXS/'+filename+'_d3.h5', 'r')
-    ccd1 = np.array(f1['entry']['analysis']['spectrum'][()])
-    ccd2 = np.array(f2['entry']['analysis']['spectrum'][()])
-    ccd3 = np.array(f3['entry']['analysis']['spectrum'][()])
-    ccd1 = x_corr(ccd2,ccd1)
-    ccd3 = x_corr(ccd2,ccd3)
-    xdata,tempData = elastic_shift(ccd1+ccd2+ccd3)
-    return xdata,tempData
-
-def combine_rixs(scans):
-    for i,scannumber in enumerate(scans):
-        if i == 0:
-            xdata,ydata = get_rixs(scannumber)
-            refdata = ydata
-            sumdata = ydata
-        else:
-            _,ydata = get_rixs(scannumber)
-            ydata = x_corr(refdata,ydata)
-            sumdata = sumdata+ydata
-    return xdata,sumdata
-
-if __name__ == "__main__":
-    projectPath = 'X:/RIXS/Asmara'
-    baseAtom = 'O'
-    energyDispersion = 0.00535 #eV/subpixel
 
 ```
 
+```python
+xas_dict = {}
+
+
+def load_xas(scan_number, path=project_path.replace("\\", "/"), base=base_atom):
+
+    global xas_dict
+    if scan_number not in xas_dict:
+        xas = {}
+        data = np.loadtxt(f"{path}/XAS/{base}_{scan_number:04d}.xas", comments="#")
+        xas["EN"] = data[:, 0]
+        xas["TEY"] = data[:, 1]
+        xas["TFY"] = data[:, 2]
+        xas["RMU"] = data[:, 3]
+        xas_dict[scan_number] = xas
+    else:
+        xas = xas_dict[scan_number]
+
+    return xas["EN"], xas["TEY"], xas["TFY"], xas["RMU"]
+
+```
+
+```python
+rixs_dict = {}
+
+
+def load_h5(file_name):
+
+    f = h5py.File(file_name, "r")
+    ccd = np.array(f["entry"]["analysis"]["spectrum"][()])
+    f.close()
+
+    return ccd
+
+
+def load_ccds(scan_number, path=project_path.replace("\\", "/"), base=base_atom):
+
+    global rixs_dict
+    if scan_number not in rixs_dict:
+        rixs = {}
+        for i in range(1, 4):
+            rixs[i] = load_h5(f"{path}/RIXS/{base}_{scan_number:04d}_d{i}.h5")
+        rixs_dict[scan_number] = rixs
+    else:
+        rixs = rixs_dict[scan_number]
+
+    return rixs[1], rixs[2], rixs[3]
+
+```
+
+```python
+if __name__ == "__main__":
+    project_path = "X:/RIXS/Asmara/"
+    base_atom = "O"
+    energy_dispersion = 0.00457  # eV/subpixel
+
+```
