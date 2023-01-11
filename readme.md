@@ -70,8 +70,6 @@ def load_rixs(scan_number):
     ccd1, ccd2, ccd3 = load_ccds(scan_number)
     ccd1 = x_corr(ccd2, ccd1)
     ccd3 = x_corr(ccd2, ccd3)
-
-    #    load raw data
     xdata = np.arange(len(ccd2))
     ydata = ccd1 + ccd2 + ccd3
 
