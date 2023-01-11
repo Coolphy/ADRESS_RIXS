@@ -1,6 +1,7 @@
 ```python
 import h5py
 import numpy as np
+from scipy.signal import correlate, correlation_lags
 
 ```
 
@@ -52,6 +53,29 @@ def load_ccds(scan_number, path=project_path.replace("\\", "/"), base=base_atom)
 
     return rixs[1], rixs[2], rixs[3]
 
+```
+
+```python
+def x_corr(refData, uncorrData):
+
+    corr = correlate(refData, uncorrData)
+    lags = signal.correlation_lags(len(refData), len(uncorrData))
+    lag = lags[np.argmax(corr)]
+    corrData = np.roll(uncorrData, lag)
+
+    return corrData
+
+def load_rixs(scan_number):
+
+    ccd1, ccd2, ccd3 = load_ccds(scan_number)
+    ccd1 = x_corr(ccd2, ccd1)
+    ccd3 = x_corr(ccd2, ccd3)
+
+    #    load raw data
+    xdata = np.arange(len(ccd2))
+    ydata = ccd1 + ccd2 + ccd3
+
+    return xdata, ydata
 ```
 
 ```python
