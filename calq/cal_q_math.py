@@ -28,8 +28,8 @@ simplify(q10)
 # %%
 q10value = q10.subs(
     [
-        (twotheta, 130 / 180 * pi),
-        (a, 4.985),
+        (twotheta, 150 / 180 * pi),
+        (a, 3.9536),
         (gamma, 120 / 180 * pi),
         (e, 708),
         # (specular, 65 / 180 * pi),
@@ -41,8 +41,8 @@ print(simplify(q10value.evalf(4)))
 
 q01value = q10.subs(
     [
-        (twotheta, 130 / 180 * pi),
-        (a, 4.049),
+        (twotheta, 150 / 180 * pi),
+        (a, 16.396),
         (gamma, 90 / 180 * pi),
         (e, 708),
         (specular, 65 / 180 * pi),
@@ -83,8 +83,8 @@ import math
 
 thetaarray = np.arange(0, 130, 1) * pi / 180
 
-x = 0.4469 * np.sin(65.0 * math.pi / 180.0 - thetaarray.astype(float))
-y = 0.4192 * np.cos(65.0 * math.pi / 180.0 - thetaarray.astype(float))
+x = 0.3545 * np.sin(65.0 * math.pi / 180.0 - thetaarray.astype(float))
+y = 1.697 * np.cos(65.0 * math.pi / 180.0 - thetaarray.astype(float))
 
 rect = [0.1, 0.1, 0.8, 0.8]
 
@@ -92,10 +92,10 @@ fig = plt.figure()
 
 axs = fig.add_axes(rect)
 # axp = fig.add_axes(axs.get_position().bounds, polar=True, frameon=False)
-fig.gca().set_aspect(1.066)
+fig.gca().set_aspect(0.3545/1.697)
 axs.plot(x, y)
 axs.set_xlim([-0.5, 0.5])
-axs.set_ylim([0, 0.5])
+axs.set_ylim([0, 2])
 axs.grid()
 axs.set_xlabel("[H, 0 ,0 ]")
 axs.set_ylabel("[0, 0 ,L ]")

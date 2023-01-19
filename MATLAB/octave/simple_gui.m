@@ -4,6 +4,9 @@ try
 pkg load signal
 end
 
+global data_dict;
+data_dict = struct([]);
+
 % Create UIFigure
 f = figure('Position',[50 50 1024 768],...
 'DeleteFcn',@f_Callback);

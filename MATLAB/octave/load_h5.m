@@ -1,5 +1,4 @@
 function ccd = load_h5(filename)
-
 try
     f=load(filename);
     ccd = f.entry.analysis.spectrum;
