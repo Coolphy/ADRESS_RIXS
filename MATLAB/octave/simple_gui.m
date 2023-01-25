@@ -143,6 +143,7 @@ global xdata
 global ydata
 [fname, fpath, fltidx] = uiputfile ({'*.txt', 'Text files'});
 dlmwrite([fpath,fname],[xdata;ydata].','delimiter','\t','-append');
+% assignin('base',fname(1:end-4),[xdata;ydata])
 end
 
 function f_Callback(src,event)
