@@ -4,11 +4,11 @@ filenumber=length(filelist);
 data=[];
 for i=1:filenumber
 filename = filelist{i};
-if ~isfield(data_dict,filename)
+if ~isfield(data_dict,filename(1:end-3))
 data_dict(1).(filename).ccd = load_h5([dirname,'/',filename]);
-data(i,:)= data_dict(1).(filename).ccd;
+data(i,:)= data_dict(1).(filename(1:end-3)).ccd;
 else
-data(i,:)= data_dict(1).(filename).ccd;
+data(i,:)= data_dict(1).(filename(1:end-3)).ccd;
 end
 end
 end

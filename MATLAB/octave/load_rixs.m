@@ -9,4 +9,3 @@ for i = 1:length(runs)
 end
 data = load_ccd(fileList,path)
 end
-end
