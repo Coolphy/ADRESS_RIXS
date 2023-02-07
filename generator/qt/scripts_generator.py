@@ -26,7 +26,7 @@ class beamline:
     def __init__(self):
         self.motor = {}
         self.motor["energy"] = 0.0
-        self.motor["polar"] = 0
+        self.motor["polar"] = 5
         self.motor["split"] = 0
         self.motor["exposure"] = 0
         # self.motor['slits'] = 10
@@ -133,6 +133,8 @@ def polar_mode_to_string(polar_mode):
         polar_string = "C+"
     elif polar_mode == 3:
         polar_string = "C-"
+    else:
+        polar_string = "error"
     return polar_string
 
 

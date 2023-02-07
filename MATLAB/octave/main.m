@@ -6,13 +6,15 @@ end
 global path
 global base
 global energy_dispersion
-path = 'C:\Researches\Scripts\plotRIXS\test\';
-base = 'Fe';
-energy_dispersion = 0.004;
+global data_dict
+data_dict = struct([]);
+path = '/sls/X03MA/data/x03maop/Data1/RIXS/Pisani_EPFL/RIXS/';
+base = 'O';
+energy_dispersion = 0.004359;
 
 
 %%
-data = load_rixs([25,26,27,28,29]);
+data = load_rixs([143:1:150]);
 for i = 1:size(data,1)
 plot(data(i,:));
 hold on;
@@ -21,12 +23,12 @@ hold off;
 
 
 %%
-data = correlate_rixs(data,[2410,2500]);
+data = correlate_rixs(data,[1870,1940]);
 for i = 1:size(data,1)
 plot(data(i,:));
 hold on;
 end
-xlim([2410,2500])
+%xlim([1000,4000])
 hold off;
 
 
@@ -39,7 +41,7 @@ plot(sumdata)
 
 
 %%
-[x,y] = zero_energy(sumdata,2451);
+[x,y] = zero_energy(sumdata,1905);
 plot(x,y)
 
 
