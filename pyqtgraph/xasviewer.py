@@ -165,7 +165,7 @@ class Ui_MainWindow(object):
         self.graphWidget.plot(
             EN,
             TFY,
-            name="TEY",
+            name="TFY",
             pen=pen2,
         )
 

@@ -11,12 +11,14 @@ import datetime
 
 def TimeStampToTime(timestamp):
     timeStruct = time.localtime(timestamp)
-    return time.strftime('%Y-%m-%d %H:%M:%S',timeStruct)
+    return time.strftime("%Y-%m-%d %H:%M:%S", timeStruct)
+
 
 def get_FileCreateTime(filePath):
     # t = os.path.getctime(filePath)
     t = os.path.getmtime(filePath)
     return TimeStampToTime(t)
+
 
 def listFile(fileDir):
     list = sorted(os.listdir(fileDir))
@@ -107,7 +109,7 @@ if __name__ == "__main__":
             "SplitTime(s)",
             "Slit(um)",
             "RingCurrent",
-            "Date"
+            "Date",
         ]
     )
 
