@@ -1,9 +1,9 @@
 import sys
 import os
 
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from PySide6.QtWidgets import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 import pyqtgraph as pg
 
@@ -81,7 +81,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(
-            QCoreApplication.translate("MainWindow", "XASViewer", None)
+            QCoreApplication.translate("MainWindow", "XASviewer", None)
         )
         self.pushButton_2.setText(
             QCoreApplication.translate("MainWindow", "Save", None)
