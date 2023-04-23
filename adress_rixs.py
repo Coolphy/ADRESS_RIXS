@@ -10,6 +10,7 @@ class adress_rixs:
         self.path = path
         self.base = base
         self.dispersion = dispersion
+        self.elastic_peak()
 
     def load_xas(self, scan_number):
         if scan_number not in xas_dict:
