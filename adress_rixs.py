@@ -92,7 +92,7 @@ class adress_rixs:
         ccd1 = self.x_corr(ccd2, ccd1)
         ccd3 = self.x_corr(ccd2, ccd3)
         xdata = np.arange(len(ccd2))
-        tempdata = (ccd1 + ccd2 + ccd3) / 3
+        tempdata = ccd1 + ccd2 + ccd3
 
         #     shift automaticlly
         xdata, tempdata = self.elastic_shift(tempdata)
@@ -111,7 +111,7 @@ class adress_rixs:
                 sumdata = sumdata + ydata
 
         # normalize data
-        sumdata = sumdata / len(scans)
+        # sumdata = sumdata / len(scans)
 
         return xdata, sumdata
 
