@@ -13,7 +13,7 @@ class adress_rixs:
         self.elastic_peak()
 
     def load_xas(self, scan_number):
-        if scan_number not in xas_dict:
+        if scan_number not in self.xas_dict:
             xas = {}
             data = np.loadtxt(
                 f"{self.path}/XAS/{self.base}_{scan_number:04d}.xas", comments="#"
@@ -36,7 +36,7 @@ class adress_rixs:
         return ccd
 
     def load_ccds(self, scan_number):
-        if scan_number not in rixs_dict:
+        if scan_number not in self.rixs_dict:
             rixs = {}
             for i in range(1, 4):
                 rixs[i] = self.load_h5(
