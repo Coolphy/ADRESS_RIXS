@@ -77,7 +77,7 @@ class adress_rixs:
                 peaks = len(xdataPixel) - 200
 
         else:
-            peaks = [zeropixel]
+            peaks = [self.zeropixel]
 
         # chop data
         xdataPixel = xdataPixel[(peaks[-1] - 2000) : (peaks[-1] + 200)]
