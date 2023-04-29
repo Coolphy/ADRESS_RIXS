@@ -1,6 +1,6 @@
 import h5py
 import numpy as np
-from scipy.signal import correlate, correlation_lags
+from scipy.signal import correlate, correlation_lags, find_peaks
 
 
 class adress_rixs:
@@ -50,7 +50,7 @@ class adress_rixs:
 
     def x_corr(self, refData, uncorrData):
         corr = correlate(refData, uncorrData)
-        lags = signal.correlation_lags(len(refData), len(uncorrData))
+        lags = correlation_lags(len(refData), len(uncorrData))
         lag = lags[np.argmax(corr)]
         corrData = np.roll(uncorrData, lag)
 
@@ -74,7 +74,7 @@ class adress_rixs:
                 # try to find peak with right edge
                 # peaks = xdataPixel[pixelData>height]
             except:
-                peaks = len(xdataPixel) - 200
+                peaks = [len(xdataPixel) - 200]
 
         else:
             peaks = [self.zeropixel]
