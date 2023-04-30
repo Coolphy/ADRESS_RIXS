@@ -59,7 +59,7 @@ def load_ccds(scan_number, path=project_path.replace("\\", "/"), base=base_atom)
 def x_corr(refData, uncorrData):
 
     corr = correlate(refData, uncorrData)
-    lags = signal.correlation_lags(len(refData), len(uncorrData))
+    lags = correlation_lags(len(refData), len(uncorrData))
     lag = lags[np.argmax(corr)]
     corrData = np.roll(uncorrData, lag)
 

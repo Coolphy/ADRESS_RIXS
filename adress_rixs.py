@@ -87,7 +87,7 @@ class adress_rixs:
 
         return xDataEnergy, energyData
 
-    def load_rixs(self, scan_number):
+    def load_rix(self, scan_number):
         ccd1, ccd2, ccd3 = self.load_ccds(scan_number)
         ccd1 = self.x_corr(ccd2, ccd1)
         ccd3 = self.x_corr(ccd2, ccd3)
@@ -99,14 +99,14 @@ class adress_rixs:
 
         return xdata, tempdata
 
-    def load_runs(self, scans):
+    def load_rixs(self, scans):
         for i, scan_number in enumerate(scans):
             if i == 0:
-                xdata, ydata = self.load_rixs(scan_number)
+                xdata, ydata = self.load_rix(scan_number)
                 refdata = ydata
                 sumdata = ydata
             else:
-                _, ydata = self.load_rixs(scan_number)
+                _, ydata = self.load_rix(scan_number)
                 ydata = self.x_corr(refdata, ydata)
                 sumdata = sumdata + ydata
 
@@ -120,9 +120,9 @@ class adress_rixs:
         data = np.zeros((run_num, 2200))
         for i, runs in enumerate(run_list):
             if type(runs) is list:
-                X, d = self.load_runs(runs)
+                X, d = self.load_rixs(runs)
             else:
-                X, d = self.load_runs([runs])
+                X, d = self.load_rixs([runs])
             data[i, :] = d
         if Y is None:
             Y = np.arange(run_num + 1)
