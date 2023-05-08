@@ -55,8 +55,8 @@ bsave = uicontrol(f,'Style','pushbutton',...
 'String','Save','Position',[911 17 100 22],'Units','normalized',...
 'Callback',@bsave_Callback);
 
-f2 = figure()
-a2 = axes(f2)
+% f2 = figure();
+% a2 = axes(f2);
 
 % Create the callbacks.
 function bopen_Callback(src,event)
