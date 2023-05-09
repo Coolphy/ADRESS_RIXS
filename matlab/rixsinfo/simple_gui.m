@@ -39,8 +39,8 @@ last = get(eto,'String');
 
 filelist = make_list(atom,start,last);
 info = load_info(filelist,dirname);
-t.RowName = filelist;
-t.Data = info;
+set(t,'RowName', filelist);
+set(t,'Data', info);
 
 end
 

@@ -13,7 +13,7 @@ try
     info(1).('phph') = sprintf('%.3f',mean(f.entry.instrument.NDAttributes.SamplePhi));
     info(1).('tltl') = sprintf('%.3f',mean(f.entry.instrument.NDAttributes.SampleTilt));
     info(1).('atat') = sprintf('%d',mean(f.entry.instrument.NDAttributes.AcquireTime));
-    info(1).('spsp') = sprintf('%d',(f.entry.instrument.NDAttributes.ExposureSplit));
+    info(1).('spsp') = sprintf('%d',mean(f.entry.instrument.NDAttributes.ExposureSplit));
     info(1).('slsl') = sprintf('%.1f',mean(f.entry.instrument.NDAttributes.ExitSlit));
     info(1).('bcbc') = sprintf('%.0f',mean(f.entry.instrument.NDAttributes.BeamCurrent));
     
