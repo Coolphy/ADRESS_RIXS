@@ -18,7 +18,7 @@ end
 function [en, tey, tfy] = load_xas(filePath, baseAtom, runNo)
 
     fileName = make_name(baseAtom, runNo);
-    data = readtable(sprintf("%s/%s.xas", filePath, fileName), 'FileType', 'text');
+    data = readtable(sprintf("%s/%s.xas", filePath, fileName), 'FileType', 'text', 'NumHeaderLines', 35);
     en = data{:, 1};
     tey = data{:, 2};
     tfy = data{:, 3};
