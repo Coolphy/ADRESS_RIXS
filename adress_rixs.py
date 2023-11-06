@@ -99,7 +99,7 @@ class adress_rixs:
 
         return xdata, tempdata
 
-    def load_rixs(self, scans):
+    def load_rixs(self, *scans):
         for i, scan_number in enumerate(scans):
             if i == 0:
                 xdata, ydata = self.load_rix(scan_number)
